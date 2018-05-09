@@ -5,6 +5,7 @@ $arrow-size: 0.8em;
 .selection-container {
   position: absolute; 
   z-index: 99999;
+  user-select: none;
 
   button::after{
     content: "";
@@ -22,6 +23,4 @@ $arrow-size: 0.8em;
   button:hover::after{
     border-bottom-color: $colour-btn-primary-hover;
   }
-
 }
-

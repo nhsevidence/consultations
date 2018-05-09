@@ -1,7 +1,13 @@
-import React, { Component, Fragment } from "react";
-import xpathRange from "xpath-range";
-//import Tooltip from "rc-tooltip";
-//import stringifyObject from "stringify-object";
+import React, { Component } from "react";
+//import xpathRange from "xpath-range";
+import { stringifyObject } from "stringify-object";
+//import { rangy, TextRange } from "rangy";
+import rangy from "rangy/lib/rangy-core.js";
+import rangyHighlight from "rangy/lib/rangy-highlighter";
+import rangyClassApplier from "rangy/lib/rangy-classapplier";
+import rangyTextRange from "rangy/lib/rangy-textrange";
+import rangySerializer from "rangy/lib/rangy-serializer";
+
 
 type PropsType = {
 	newCommentFunc: Function,
@@ -25,24 +31,51 @@ export class Selection extends Component<PropsType, StateType> {
 		this.selectionContainer = React.createRef();
 	}
 	
-	getCommentForRange = (limitingElement: any, selection: any) =>{
-		let selectionRange = selection.getRangeAt(0);
-		let browserRange = new xpathRange.Range.BrowserRange(selectionRange);
-		let normedRange = browserRange.normalize().limit(limitingElement); //restrict the range to the current limiting area.
+	getCommentForRange = (limitingElement: any, selection: any, excludeClassName: string) =>{
 		
-		let quote = this.trim(normedRange.text());
-		let serialisedRange = normedRange.serialize(limitingElement, "");
-		
-		let comment = { quote: quote,
-			rangeStart: serialisedRange.start,
-			rangeStartOffset: serialisedRange.startOffset,
-			rangeEnd: serialisedRange.end,
-			rangeEndOffset: serialisedRange.endOffset,
-			sourceURI: this.props.sourceURI,
-			placeholder: "Comment on this selected text",
-			commentText: "",
-			commentOn: "Selection" };
+		//const textRangeModule = rangy.modules.TextRange;
+		const rangySelection = rangy.getSelection();
 
+		let selectionRange = rangySelection.getRangeAt(0);
+
+		console.log(rangySerializer);
+
+		let serialisedRange = rangySerializer.serializeRange(selectionRange, true); //, limitingElement
+		console.log(serialisedRange);
+
+		console.log(rangyTextRange);
+		console.log(rangyTextRange.text);
+		console.log(rangyTextRange.innerText);
+		console.log(rangyTextRange.textRange);
+
+		let quote = rangyTextRange.innerText();
+
+		// console.log(rangyTextRange.innerText(serialisedRange));
+		// console.log(rangyTextRange.innerText(rangySelection));
+		
+
+		//let browserRange = new xpathRange.Range.BrowserRange(selectionRange);
+
+		//let normedRange = browserRange.normalize().limit(limitingElement); //.limit(document.getElementsByClassName(excludeClassName)); //restrict the range to the current limiting area.
+		//console.log(`normed range: ${normedRange}`);
+		// if (normedRange == null){
+		// 	return null;
+		// }
+
+		//let quote = this.trim(normedRange.text());
+		//let serialisedRange = normedRange.serialize(limitingElement, "." + excludeClassName); //ignore the icons.
+		
+		 let comment = { quote: quote,
+		 	rangeStart: serialisedRange, //serialisedRange.start,
+		// 	rangeStartOffset: serialisedRange.startOffset,
+		// 	rangeEnd: serialisedRange.end,
+		// 	rangeEndOffset: serialisedRange.endOffset,
+		 	sourceURI: this.props.sourceURI,
+		 	placeholder: "Comment on this selected text",
+		 	commentText: "",
+		 	commentOn: "Selection" 
+		};
+		
 		return(comment);
 	}
 
@@ -50,11 +83,15 @@ export class Selection extends Component<PropsType, StateType> {
 
 		if (window && window.getSelection){
 			const selection = window.getSelection();
-			if (selection.isCollapsed || selection.rangeCount < 1){ //isCollapsed is true when there's no text selected.
+			if (selection.isCollapsed || selection.rangeCount < 1){ //isCollapsed is true when there"s no text selected.
 				this.setState({ toolTipVisible: false });
 				return;
 			}			
-			const comment = this.getCommentForRange(event.currentTarget, selection);
+			const comment = this.getCommentForRange(event.currentTarget, selection, "icon"); 
+			if (comment === null){
+				this.setState({ toolTipVisible: false });
+				return;
+			}
 			
 			const boundingRectOfContainer = this.selectionContainer.current.getBoundingClientRect();
 			const position =
@@ -69,21 +106,10 @@ export class Selection extends Component<PropsType, StateType> {
 		}		
 	}	
 
-	getElementOffset = (element:any) => {
-
-		var de = document.documentElement;
-		var box = element.getBoundingClientRect();
-		var top = box.top + window.pageYOffset - de.clientTop;
-		var left = box.left + window.pageXOffset - de.clientLeft;
-		return { top: top, left: left };
-	}
-
-
 	onButtonClick = (event: Event ) => {
 		this.props.newCommentFunc(this.state.comment);
 		this.setState({ toolTipVisible: false });
 	}
-
 
 	onVisibleChange = (toolTipVisible) => {
 		this.setState({
@@ -91,14 +117,12 @@ export class Selection extends Component<PropsType, StateType> {
 		});
 	}
 
-	// trim strips whitespace from either end of a string.
-	//
-	// This usually exists in native code, but not in IE8.
+	// trim strips whitespace from either end of a string. This usually exists in native code, but not in IE8.
 	trim = (s: string) => {
 		if (typeof String.prototype.trim === "function") {
 			return String.prototype.trim.call(s);
 		} else {
-			return s.replace(/^[\s\xA0]+|[\s\xA0]+$/g, '');
+			return s.replace(/^[\s\xA0]+|[\s\xA0]+$/g, "");
 		}
 	}
 
@@ -117,7 +141,7 @@ type ToolTipPropsType = {
 	visible: boolean,	
 	onButtonClick: any
 }
-export const MyToolTip = (props = ToolTipPropsType) => {
+const MyToolTip = (props = ToolTipPropsType) => {
 	const { position, visible, onButtonClick } = props;
 	var contentMenuStyle = {
 		display: visible ? "block" : "none",
