@@ -39,54 +39,32 @@ export class Selection extends Component<PropsType, StateType> {
 		this.selectionContainer = React.createRef();
 	}
 
-	getCommentForRange = (limitingElement: any, selection: any, excludeClassName: string) =>{
+	getCommentForRange = (limitingElement: any) =>{
 
-		rangy.init();
+		const selection = rangy.getSelection();
 
-		var classApplierModule = rangy.modules.ClassApplier;
-
-		const highlighter = rangy.createHighlighter(document, "TextRange");
-
-		let classApplied = rangy.createClassApplier("highlightClass");
-		highlighter.addClassApplier(classApplied);
-
-		highlighter.highlightSelection("highlightClass");
-
-		const myHighlights = [
-			"0/1/1:16,0/0/2/1/1:14", //{ade594e}", //diagnosis in 1.2.1
-			"0/1/1:16,0/1/1/1:14", // uidance is base
-			//"1/2/1:1,0/1/1/2/1:5", // guidance -> "Offer"
-			//"1/2/1:1,0/1/1/2/1:14", // guidance -> "Offer patients"
-			//"1/1/2/1:6,0/2/1/2/1:8" // "patients"
-		 ];
-
-		console.log("canDeserialiseRange?: " + rangy.canDeserializeRange(myHighlights[0], limitingElement));
-
-		const highlightedSelection = rangy.deserializeSelection(myHighlights[0], limitingElement);
-		highlighter.highlightSelection("highlightClass", {
-			selection: highlightedSelection
-		});
-
-		const rangySelection = rangy.getSelection();
-
-	//	let selectionRange = rangySelection.getRangeAt(0);
-
-		let serialisedRange = "";
-		try{
-			//see: https://github.com/timdown/rangy/wiki/Serializer-Module
-			serialisedRange = rangy.serializeSelection(rangySelection, false, limitingElement);
-			console.log(serialisedRange);
-		}
-		catch(error){
-			console.error(error);
+		if (selection.isCollapsed || selection.rangeCount < 1){ //isCollapsed is true when there"s no text selected.
 		 	return null;
 		}
 
-		let quote = "todo"; //rangy.text();
+		const ourRange = selection.getRangeAt(0);
+		//const ourRangeSerialized = rangy.serializeRange(ourRange, false, limitingElement);
+		let ourRangeSerialized = "";
+		try{
+			//see: https://github.com/timdown/rangy/wiki/Serializer-Module
+			ourRangeSerialized = rangy.serializeRange(ourRange, false, limitingElement);
+			console.log(ourRangeSerialized);
+		}
+		catch(error){
+			console.error(error);
+			return null;
+		}
+
+		let quote = selection.text();
 
 		let comment = {
 			quote: quote,
-		 	rangeStart: serialisedRange,
+		 	rangeStart: ourRangeSerialized,
 		 	sourceURI: this.props.sourceURI,
 		 	placeholder: "Comment on this selected text",
 		 	commentText: "",
@@ -99,12 +77,12 @@ export class Selection extends Component<PropsType, StateType> {
 	onMouseUp = (event: Event) => {
 
 		if (window && window.getSelection){
-			const selection = window.getSelection();
-			if (selection.isCollapsed || selection.rangeCount < 1){ //isCollapsed is true when there"s no text selected.
-				this.setState({ toolTipVisible: false });
-				return;
-			}
-			const comment = this.getCommentForRange(event.currentTarget, selection, "icon");
+			// const selection = window.getSelection();
+			// if (selection.isCollapsed || selection.rangeCount < 1){ //isCollapsed is true when there"s no text selected.
+			// 	this.setState({ toolTipVisible: false });
+			// 	return;
+			// }
+			const comment = this.getCommentForRange(event.currentTarget);
 			if (comment === null){
 				this.setState({ toolTipVisible: false });
 				return;
