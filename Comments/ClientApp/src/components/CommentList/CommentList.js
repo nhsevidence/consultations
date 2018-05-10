@@ -2,6 +2,12 @@
 
 import React, { Component, Fragment } from "react";
 import { withRouter } from "react-router-dom";
+import rangy from "rangy/lib/rangy-core.js";
+import "rangy/lib/rangy-highlighter";
+import "rangy/lib/rangy-classapplier";
+import "rangy/lib/rangy-textrange";
+import "rangy/lib/rangy-serializer";
+
 import { load } from "./../../data/loader";
 import preload from "../../data/pre-loader";
 import { CommentBox } from "../CommentBox/CommentBox";
@@ -98,6 +104,30 @@ export class CommentList extends Component<PropsType, StateType> {
 		}
 	}
 
+	generateHighlights = () => {
+		const ranges = this.state.comments
+			.filter(comment => comment.rangeStart !== null)
+			.map(comment => comment.rangeStart);
+		console.log(ranges);
+
+		const highlighter = rangy.createHighlighter(document, "TextRange");
+
+		let classApplied = rangy.createClassApplier("highlightClass");
+		highlighter.addClassApplier(classApplied);
+
+
+		for (let index of ranges){
+
+			const rangeToHighlight = rangy.deserializeRange(ranges[index]); //, limitingElement);
+
+			highlighter.highlightRanges("highlightClass", [rangeToHighlight]);
+		}
+
+
+
+
+	};
+
 	newComment(newComment: CommentType) {
 		let comments = this.state.comments;
 		//negative ids are unsaved / new comments
@@ -114,6 +144,7 @@ export class CommentList extends Component<PropsType, StateType> {
 		});
 		comments.unshift(generatedComment);
 		this.setState({ comments });
+		this.generateHighlights();
 	}
 
 	saveCommentHandler = (e: Event, comment: CommentType) => {

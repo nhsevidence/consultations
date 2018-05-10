@@ -52,7 +52,7 @@ export class Selection extends Component<PropsType, StateType> {
 		let ourRangeSerialized = "";
 		try{
 			//see: https://github.com/timdown/rangy/wiki/Serializer-Module
-			ourRangeSerialized = rangy.serializeRange(ourRange, false, limitingElement);
+			ourRangeSerialized = rangy.serializeRange(ourRange, true, limitingElement);
 			console.log(ourRangeSerialized);
 		}
 		catch(error){
