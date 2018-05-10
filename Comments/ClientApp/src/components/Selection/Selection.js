@@ -3,10 +3,10 @@ import React, { Component } from "react";
 import { stringifyObject } from "stringify-object";
 //import { rangy, TextRange } from "rangy";
 import rangy from "rangy/lib/rangy-core.js";
-import rangyHighlight from "rangy/lib/rangy-highlighter";
-import rangyClassApplier from "rangy/lib/rangy-classapplier";
-import rangyTextRange from "rangy/lib/rangy-textrange";
-import rangySerializer from "rangy/lib/rangy-serializer";
+import "rangy/lib/rangy-highlighter";
+import "rangy/lib/rangy-classapplier";
+import "rangy/lib/rangy-textrange"; 
+import "rangy/lib/rangy-serializer";
 
 
 type PropsType = {
@@ -33,43 +33,25 @@ export class Selection extends Component<PropsType, StateType> {
 	
 	getCommentForRange = (limitingElement: any, selection: any, excludeClassName: string) =>{
 		
-		//const textRangeModule = rangy.modules.TextRange;
 		const rangySelection = rangy.getSelection();
 
-		let selectionRange = rangySelection.getRangeAt(0);
+		let selectionRange = rangySelection.getRangeAt(0);		
 
-		console.log(rangySerializer);
+		let serialisedRange = "";
+		try{
+			//see: https://github.com/timdown/rangy/wiki/Serializer-Module
+			serialisedRange = rangy.serializeRange(selectionRange, false, limitingElement);
+			console.log(serialisedRange);		
+		}
+		catch(error){
+		 	return null;
+		}
 
-		let serialisedRange = rangySerializer.serializeRange(selectionRange, true); //, limitingElement
-		console.log(serialisedRange);
+		let quote = rangySelection.text(); 
 
-		console.log(rangyTextRange);
-		console.log(rangyTextRange.text);
-		console.log(rangyTextRange.innerText);
-		console.log(rangyTextRange.textRange);
-
-		let quote = rangyTextRange.innerText();
-
-		// console.log(rangyTextRange.innerText(serialisedRange));
-		// console.log(rangyTextRange.innerText(rangySelection));
-		
-
-		//let browserRange = new xpathRange.Range.BrowserRange(selectionRange);
-
-		//let normedRange = browserRange.normalize().limit(limitingElement); //.limit(document.getElementsByClassName(excludeClassName)); //restrict the range to the current limiting area.
-		//console.log(`normed range: ${normedRange}`);
-		// if (normedRange == null){
-		// 	return null;
-		// }
-
-		//let quote = this.trim(normedRange.text());
-		//let serialisedRange = normedRange.serialize(limitingElement, "." + excludeClassName); //ignore the icons.
-		
-		 let comment = { quote: quote,
-		 	rangeStart: serialisedRange, //serialisedRange.start,
-		// 	rangeStartOffset: serialisedRange.startOffset,
-		// 	rangeEnd: serialisedRange.end,
-		// 	rangeEndOffset: serialisedRange.endOffset,
+		let comment = { 
+			quote: quote,
+		 	rangeStart: serialisedRange,
 		 	sourceURI: this.props.sourceURI,
 		 	placeholder: "Comment on this selected text",
 		 	commentText: "",
