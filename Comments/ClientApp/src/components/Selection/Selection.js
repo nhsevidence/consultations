@@ -5,8 +5,16 @@ import { stringifyObject } from "stringify-object";
 import rangy from "rangy/lib/rangy-core.js";
 import "rangy/lib/rangy-highlighter";
 import "rangy/lib/rangy-classapplier";
-import "rangy/lib/rangy-textrange"; 
+import "rangy/lib/rangy-textrange";
 import "rangy/lib/rangy-serializer";
+
+// const rangy = require("rangy/lib/rangy-core.js")
+//
+// import rangy from 'rangy/lib/rangy-core.js';
+// import rangyHighlight from 'rangy/lib/rangy-highlighter';
+// import rangyClassApplier from 'rangy/lib/rangy-classapplier';
+// import rangyTextRange from 'rangy/lib/rangy-textrange';
+// import rangySerializer from 'rangy/lib/rangy-serializer';
 
 
 type PropsType = {
@@ -14,7 +22,7 @@ type PropsType = {
 	sourceURI: string
 };
 
-type StateType = {	
+type StateType = {
 	toolTipVisible: boolean,
 	comment: any,
 	position: any
@@ -30,34 +38,61 @@ export class Selection extends Component<PropsType, StateType> {
 		};
 		this.selectionContainer = React.createRef();
 	}
-	
+
 	getCommentForRange = (limitingElement: any, selection: any, excludeClassName: string) =>{
-		
+
+		rangy.init();
+
+		var classApplierModule = rangy.modules.ClassApplier;
+
+		const highlighter = rangy.createHighlighter(document, "TextRange");
+
+		let classApplied = rangy.createClassApplier("highlightClass");
+		highlighter.addClassApplier(classApplied);
+
+		highlighter.highlightSelection("highlightClass");
+
+		const myHighlights = [
+			"0/1/1:16,0/0/2/1/1:14", //{ade594e}", //diagnosis in 1.2.1
+			"0/1/1:16,0/1/1/1:14", // uidance is base
+			//"1/2/1:1,0/1/1/2/1:5", // guidance -> "Offer"
+			//"1/2/1:1,0/1/1/2/1:14", // guidance -> "Offer patients"
+			//"1/1/2/1:6,0/2/1/2/1:8" // "patients"
+		 ];
+
+		console.log("canDeserialiseRange?: " + rangy.canDeserializeRange(myHighlights[0], limitingElement));
+
+		const highlightedSelection = rangy.deserializeSelection(myHighlights[0], limitingElement);
+		highlighter.highlightSelection("highlightClass", {
+			selection: highlightedSelection
+		});
+
 		const rangySelection = rangy.getSelection();
 
-		let selectionRange = rangySelection.getRangeAt(0);		
+	//	let selectionRange = rangySelection.getRangeAt(0);
 
 		let serialisedRange = "";
 		try{
 			//see: https://github.com/timdown/rangy/wiki/Serializer-Module
-			serialisedRange = rangy.serializeRange(selectionRange, false, limitingElement);
-			console.log(serialisedRange);		
+			serialisedRange = rangy.serializeSelection(rangySelection, false, limitingElement);
+			console.log(serialisedRange);
 		}
 		catch(error){
+			console.error(error);
 		 	return null;
 		}
 
-		let quote = rangySelection.text(); 
+		let quote = "todo"; //rangy.text();
 
-		let comment = { 
+		let comment = {
 			quote: quote,
 		 	rangeStart: serialisedRange,
 		 	sourceURI: this.props.sourceURI,
 		 	placeholder: "Comment on this selected text",
 		 	commentText: "",
-		 	commentOn: "Selection" 
+		 	commentOn: "Selection"
 		};
-		
+
 		return(comment);
 	}
 
@@ -68,25 +103,25 @@ export class Selection extends Component<PropsType, StateType> {
 			if (selection.isCollapsed || selection.rangeCount < 1){ //isCollapsed is true when there"s no text selected.
 				this.setState({ toolTipVisible: false });
 				return;
-			}			
-			const comment = this.getCommentForRange(event.currentTarget, selection, "icon"); 
+			}
+			const comment = this.getCommentForRange(event.currentTarget, selection, "icon");
 			if (comment === null){
 				this.setState({ toolTipVisible: false });
 				return;
 			}
-			
+
 			const boundingRectOfContainer = this.selectionContainer.current.getBoundingClientRect();
 			const position =
 			{
 				x: event.pageX - (boundingRectOfContainer.left + document.documentElement.scrollLeft),
-			  	y: event.pageY - (boundingRectOfContainer.top + document.documentElement.scrollTop)			  
+			  	y: event.pageY - (boundingRectOfContainer.top + document.documentElement.scrollTop)
 			};
 
 			this.setState({ comment, position, toolTipVisible: true });
 		} else{
 			this.setState({ toolTipVisible: false });
-		}		
-	}	
+		}
+	}
 
 	onButtonClick = (event: Event ) => {
 		this.props.newCommentFunc(this.state.comment);
@@ -111,16 +146,16 @@ export class Selection extends Component<PropsType, StateType> {
 	render() {
 		return (
 			<div onMouseUp={this.onMouseUp} ref={this.selectionContainer}>
-				<MyToolTip visible={this.state.toolTipVisible} onButtonClick={this.onButtonClick} position={this.state.position}/>						
+				<MyToolTip visible={this.state.toolTipVisible} onButtonClick={this.onButtonClick} position={this.state.position}/>
 				{this.props.children}
-			</div> 
+			</div>
 		);
 	}
 }
 
 type ToolTipPropsType = {
 	position: any,
-	visible: boolean,	
+	visible: boolean,
 	onButtonClick: any
 }
 const MyToolTip = (props = ToolTipPropsType) => {
@@ -131,7 +166,7 @@ const MyToolTip = (props = ToolTipPropsType) => {
 		top: position.y
 	};
 	return (
-		<div className="selection-container" style={contentMenuStyle}>			
+		<div className="selection-container" style={contentMenuStyle}>
 			<button onClick={onButtonClick} className="btn"><span className="icon icon--comment" aria-hidden="true"></span>&nbsp;&nbsp;Comment</button>
 		</div>
 	);
