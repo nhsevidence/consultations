@@ -51,7 +51,8 @@ export class CommentList extends Component<PropsType, StateType> {
 		super(props);
 		this.state = {
 			comments: [],
-			loading: true
+			loading: true,
+			highlighter: null
 		};
 		let preloadedData = {};
 		if (this.props.staticContext && this.props.staticContext.preload) {
@@ -73,23 +74,36 @@ export class CommentList extends Component<PropsType, StateType> {
 				comments: preloaded.comments,
 				loading: false
 			};
+			//this.generateHighlights();
 		}
 	}
 
+	//this function is only called onload server-side.
 	loadComments() {
+		console.log('loading comments');
 		load("comments", undefined, [], { sourceURI: this.props.match.url }).then(
 			res => {
 				this.setState({
 					comments: res.data.comments,
 					loading: false
-				});
+				},
+				// setTimeout(this.generateHighlights, 0)
+				);
+				console.log('comments loaded');
 			}
 		);
 	}
 
 	componentDidMount() {
-		if (this.state.comments.length === 0) {
+		if (this.state.comments.length === 0) { //if the server-side load didn't find any comments, try again.
 			this.loadComments();
+		}
+		else{
+			//this.generateHighlights();
+			setTimeout(
+				this.generateHighlights,
+				0
+			);
 		}
 	}
 
@@ -105,27 +119,39 @@ export class CommentList extends Component<PropsType, StateType> {
 	}
 
 	generateHighlights = () => {
+		console.log('generating highlights');
 		const ranges = this.state.comments
 			.filter(comment => comment.rangeStart !== null)
 			.map(comment => comment.rangeStart);
 		console.log(ranges);
 
-		const highlighter = rangy.createHighlighter(document, "TextRange");
+		let highlighter = window.highlighter;
+		if (typeof(highlighter) === 'undefined' || highlighter === null) {
+			highlighter = rangy.createHighlighter(document, "TextRange");
+			let classApplied = rangy.createClassApplier("highlightClass");
+			highlighter.addClassApplier(classApplied);
 
-		let classApplied = rangy.createClassApplier("highlightClass");
-		highlighter.addClassApplier(classApplied);
-
-
-		for (let index of ranges){
-
-			const rangeToHighlight = rangy.deserializeRange(ranges[index]); //, limitingElement);
-
-			highlighter.highlightRanges("highlightClass", [rangeToHighlight]);
+			window.highlighter = highlighter;
+			//this.setState({highlighter});
 		}
 
 
 
+		highlighter.removeAllHighlights();
 
+		let limitingElement = document.getElementById("someDiv"); //temporary
+
+		for (let range of ranges){
+			console.log('about to deserialise: ' + range);
+			try {
+				const rangeToHighlight = rangy.deserializeRange(range, limitingElement);
+				highlighter.highlightRanges("highlightClass", [rangeToHighlight]);
+			}
+			catch(error){
+				console.log('problem ')
+				console.error(error);
+			}
+		}
 	};
 
 	newComment(newComment: CommentType) {
@@ -144,7 +170,7 @@ export class CommentList extends Component<PropsType, StateType> {
 		});
 		comments.unshift(generatedComment);
 		this.setState({ comments });
-		this.generateHighlights();
+		setTimeout(this.generateHighlights, 0);
 	}
 
 	saveCommentHandler = (e: Event, comment: CommentType) => {
@@ -198,6 +224,8 @@ export class CommentList extends Component<PropsType, StateType> {
 		let comments = this.state.comments;
 		comments = comments.filter(comment => comment.commentId !== commentId);
 		this.setState({ comments });
+		//setTimeout(this.generateHighlights, 0);
+		this.state.highlighter.removeAllHighlights();
 	};
 
 	render() {

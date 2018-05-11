@@ -123,7 +123,7 @@ export class Selection extends Component<PropsType, StateType> {
 
 	render() {
 		return (
-			<div onMouseUp={this.onMouseUp} ref={this.selectionContainer}>
+			<div onMouseUp={this.onMouseUp} ref={this.selectionContainer} id="someDiv">
 				<MyToolTip visible={this.state.toolTipVisible} onButtonClick={this.onButtonClick} position={this.state.position}/>
 				{this.props.children}
 			</div>

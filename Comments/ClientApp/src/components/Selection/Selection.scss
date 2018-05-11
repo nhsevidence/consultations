@@ -23,10 +23,8 @@ $arrow-size: 0.8em;
   button:hover::after{
     border-bottom-color: $colour-btn-primary-hover;
   }
-
-
 }
 
 .highlightClass{
-  background-color: yellow;
+  background-color: #ff0;
 }
