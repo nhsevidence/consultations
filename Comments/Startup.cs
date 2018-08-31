@@ -13,6 +13,7 @@ using System;
 using System.IO;
 using Comments.Auth;
 using Comments.Common;
+using Comments.Export;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Http;
@@ -71,6 +72,7 @@ namespace Comments
 	        services.TryAddTransient<ISubmitService, SubmitService>();
 			services.TryAddTransient<IAdminService, AdminService>();
 			services.TryAddSingleton<IEncryption, Encryption>();
+			services.TryAddTransient<IExportToPDF, ExportToPDF>();
 			
 			// Add authentication 
 			services.AddAuthentication(options =>
