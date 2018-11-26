@@ -1,0 +1,150 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`[ClientApp]  Header  should display correctly when consulation has ended 1`] = `
+<Fragment>
+  <h1
+    className="page-header__heading mt--0"
+    data-qa-sel="changeable-page-header"
+  >
+    My title has changed
+  </h1>
+  <p
+    className="page-header__lead mb--d"
+  >
+    This consultation 
+    ended
+     on 
+    <t
+      ago={false}
+      calendar={false}
+      date="1994-11-05T08:15:30-05:00"
+      decimal={false}
+      element="time"
+      filter={[Function]}
+      format="D MMMM YYYY"
+      fromNow={false}
+      interval={60000}
+      onChange={[Function]}
+      toNow={false}
+      unit={null}
+      unix={false}
+      utc={false}
+    />
+     at 
+     
+    <t
+      ago={false}
+      calendar={false}
+      date="1994-11-05T08:15:30-05:00"
+      decimal={false}
+      element="time"
+      filter={[Function]}
+      format="HH:mm"
+      fromNow={false}
+      interval={60000}
+      onChange={[Function]}
+      toNow={false}
+      unit={null}
+      unix={false}
+      utc={false}
+    />
+  </p>
+  <p>
+    Subtitle 1
+  </p>
+</Fragment>
+`;
+
+exports[`[ClientApp]  Header  should display correctly when consulation hasn't started 1`] = `
+<Fragment>
+  <h1
+    className="page-header__heading mt--0"
+    data-qa-sel="changeable-page-header"
+  >
+    My title
+  </h1>
+  <p
+    className="page-header__lead mb--d"
+  >
+    This consultation 
+    starts
+     on 
+    <t
+      ago={false}
+      calendar={false}
+      date="1994-11-05T08:15:30-05:00"
+      decimal={false}
+      element="time"
+      filter={[Function]}
+      format="D MMMM YYYY"
+      fromNow={false}
+      interval={60000}
+      onChange={[Function]}
+      toNow={false}
+      unit={null}
+      unix={false}
+      utc={false}
+    />
+     at 
+     
+    <t
+      ago={false}
+      calendar={false}
+      date="1994-11-05T08:15:30-05:00"
+      decimal={false}
+      element="time"
+      filter={[Function]}
+      format="HH:mm"
+      fromNow={false}
+      interval={60000}
+      onChange={[Function]}
+      toNow={false}
+      unit={null}
+      unix={false}
+      utc={false}
+    />
+  </p>
+  <p>
+    Subtitle 1
+  </p>
+  <p>
+    Subtitle 2
+  </p>
+</Fragment>
+`;
+
+exports[`[ClientApp]  Header  should display correctly when consulation is in progress 1`] = `
+<Fragment>
+  <h1
+    className="page-header__heading mt--0"
+    data-qa-sel="changeable-page-header"
+  >
+    My title
+  </h1>
+  <p
+    className="page-header__lead mb--d"
+  >
+    Open until
+     
+    <t
+      ago={false}
+      calendar={false}
+      date="1994-11-05T08:15:30-05:00"
+      decimal={false}
+      element="time"
+      filter={[Function]}
+      format="D MMMM YYYY"
+      fromNow={false}
+      interval={60000}
+      onChange={[Function]}
+      toNow={false}
+      unit={null}
+      unix={false}
+      utc={false}
+    />
+  </p>
+  <p>
+    Subtitle 1
+  </p>
+</Fragment>
+`;
