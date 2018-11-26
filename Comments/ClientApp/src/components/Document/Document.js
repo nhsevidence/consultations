@@ -18,6 +18,7 @@ import { Selection } from "../Selection/Selection";
 import { pullFocusByQuerySelector } from "../../helpers/accessibility-helpers";
 import { Header } from "../Header/Header";
 import { Tutorial } from "../Tutorial/Tutorial";
+import { HeaderButton } from "../HeaderButton/HeaderButton";
 
 type PropsType = {
 	staticContext: {
@@ -46,7 +47,8 @@ type StateType = {
 	error: {
 		hasError: boolean,
 		message: string | null,
-	}
+	},
+	responseCount: number,
 };
 
 type DocumentsType = Array<Object>;
@@ -69,6 +71,7 @@ export class Document extends Component<PropsType, StateType> {
 				hasError: false,
 				message: null,
 			},
+			responseCount: null,
 		};
 
 		if (this.props) {
@@ -128,6 +131,7 @@ export class Document extends Component<PropsType, StateType> {
 						hasError: false,
 						message: null,
 					},
+					responseCount: null,
 				};
 			}
 		}
@@ -389,6 +393,10 @@ export class Document extends Component<PropsType, StateType> {
 		});
 	};
 
+	updateResponseCount= (responseCount: number) => {
+		this.setState({responseCount});
+	};
+
 	render() {
 		if (this.state.error.hasError) {
 			throw new Error(this.state.error.message);
@@ -425,136 +433,144 @@ export class Document extends Component<PropsType, StateType> {
 					<title>{this.getPageTitle()}</title>
 				</Helmet>
 				<UserContext.Consumer>
+
 					{(contextValue: any) => !contextValue.isAuthorised ?
 						<LoginBanner signInButton={false}
 												 currentURL={this.props.match.url}
 												 signInURL={contextValue.signInURL}
 												 registerURL={contextValue.registerURL}/>
 						: /* if contextValue.isAuthorised... */ null}
-				</UserContext.Consumer>
-				<Tutorial/>
-				<div className="container">
-					<div className="grid">
-						<div data-g="12">
-							<BreadCrumbsWithRouter links={this.state.consultationData.breadcrumbs}/>
-							<main role="main">
-								<div className="page-header">
-									<Header
-										title={currentDocumentTitle}
-										reference={reference}
-										consultationState={this.state.consultationData.consultationState}/>
-									{this.state.allowComments &&
+
+					<Tutorial/>
+					
+					<div className="container">
+						<div className="grid">
+							<div data-g="12">
+								<BreadCrumbsWithRouter links={this.state.consultationData.breadcrumbs}/>
+								<main role="main">
+									<div className="page-header">
+										<Header
+											title={currentDocumentTitle}
+											reference={reference}
+											consultationState={this.state.consultationData.consultationState}/>
+										{this.state.allowComments &&
+											<Fragment>
+												<button
+													data-gtm="comment-on-document-button"
+													data-qa-sel="comment-on-consultation-document"
+													className="btn btn--cta"
+													onClick={e => {
+														e.preventDefault();
+														this.props.onNewCommentClick(e, {
+															sourceURI: this.props.match.url,
+															commentText: "",
+															commentOn: "Document",
+															quote: currentDocumentTitle,
+															order: 0,
+															section: null,
+														});
+														tagManager({
+															event: "generic",
+															category: "Consultation comments page",
+															action: "Clicked",
+															label: "Comment on document",
+														});
+													}}>
+													Comment on this document
+												</button>
+												<HeaderButton isAuthorised={contextValue.isAuthorised} responseCount={this.state.responseCount} />
+											</Fragment>
+										}
+									</div>
+
 									<button
-										data-gtm="comment-on-document-button"
-										data-qa-sel="comment-on-consultation-document"
-										className="btn btn--cta"
-										onClick={e => {
-											e.preventDefault();
-											this.props.onNewCommentClick(e, {
-												sourceURI: this.props.match.url,
-												commentText: "",
-												commentOn: "Document",
-												quote: currentDocumentTitle,
-												order: 0,
-												section: null,
-											});
-											tagManager({
-												event: "generic",
-												category: "Consultation comments page",
-												action: "Clicked",
-												label: "Comment on document",
-											});
+										className="screenreader-button"
+										onClick={() => {
+											pullFocusByQuerySelector(".document-comment-container");
 										}}>
-										Comment on this document
+										Skip navigation
 									</button>
-									}
-								</div>
 
-								<button
-									className="screenreader-button"
-									onClick={() => {
-										pullFocusByQuerySelector(".document-comment-container");
-									}}>
-									Skip navigation
-								</button>
+									<div className="grid">
 
-								<div className="grid">
-
-									{/* navigation column */}
-									<div data-g="12 md:3" className="navigationColumn">
-										<StackedNav
-											links={this.getDocumentChapterLinks(
-												documentId,
-												this.props.match.params.chapterSlug,
-												consultationId,
-												documentsData,
-												"Chapters in this document"
-											)}/>
-										<StackedNav
-											links={this.getDocumentLinks(
-												true,
-												"Other consultation documents you can comment on",
-												documentsData,
-												documentId,
-												consultationId
-											)}/>
-										{supportingDocs.links && supportingDocs.links.length !== 0 ?
-											<StackedNav links={supportingDocs}/>
-											: null}
-									</div>
-
-									{/* inPageNav column */}
-									<div data-g="12 md:3 md:push:6" className="inPageNavColumn">
-										{sections && sections.length ? (
-											<nav
-												className="in-page-nav"
-												aria-labelledby="inpagenav-title">
-												<h2
-													id="inpagenav-title"
-													className="in-page-nav__title">
-													On this page
-												</h2>
-												<ol className="in-page-nav__list" role="menubar">
-													{sections.map(item => {
-														const props = {
-															label: item.title,
-															to: `#${item.slug}`,
-															behavior: "smooth",
-															block: "start",
-														};
-														return (
-															<li
-																role="presentation"
-																className="in-page-nav__item"
-																key={objectHash(item)}
-																onClick={(e) => this.trackInPageNav(e, item)}>
-																<HashLinkTop {...props} />
-															</li>
-														);
-													})}
-												</ol>
-											</nav>
-										) : /* if !sections.length */ null}
-									</div>
-
-									{/* document column */}
-									<div data-g="12 md:6 md:pull:3" className="documentColumn">
-										<div
-											className={`document-comment-container ${
-												this.state.loading ? "loading" : ""}`}>
-											<Selection newCommentFunc={this.props.onNewCommentClick}
-																 sourceURI={this.props.match.url}
-																 allowComments={this.state.allowComments}>
-												<ProcessDocumentHtml {...documentHtmlProps} />
-											</Selection>
+										{/* navigation column */}
+										<div data-g="12 md:3" className="navigationColumn">
+											<StackedNav
+												links={this.getDocumentChapterLinks(
+													documentId,
+													this.props.match.params.chapterSlug,
+													consultationId,
+													documentsData,
+													"Chapters in this document"
+												)}/>
+											<StackedNav
+												links={this.getDocumentLinks(
+													true,
+													"Other consultation documents you can comment on",
+													documentsData,
+													documentId,
+													consultationId
+												)}/>
+											{supportingDocs.links && supportingDocs.links.length !== 0 ?
+												<StackedNav links={supportingDocs}/>
+												: null}
 										</div>
-									</div>
 
-								</div>
-							</main>
+										{/* inPageNav column */}
+										<div data-g="12 md:3 md:push:6" className="inPageNavColumn">
+											{sections && sections.length ? (
+												<nav
+													className="in-page-nav"
+													aria-labelledby="inpagenav-title">
+													<h2
+														id="inpagenav-title"
+														className="in-page-nav__title">
+														On this page
+													</h2>
+													<ol className="in-page-nav__list" role="menubar">
+														{sections.map(item => {
+															const props = {
+																label: item.title,
+																to: `#${item.slug}`,
+																behavior: "smooth",
+																block: "start",
+															};
+															return (
+																<li
+																	role="presentation"
+																	className="in-page-nav__item"
+																	key={objectHash(item)}
+																	onClick={(e) => this.trackInPageNav(e, item)}>
+																	<HashLinkTop {...props} />
+																</li>
+															);
+														})}
+													</ol>
+												</nav>
+											) : /* if !sections.length */ null}
+										</div>
+
+										{/* document column */}
+										<div data-g="12 md:6 md:pull:3" className="documentColumn">
+											<div
+												className={`document-comment-container ${
+													this.state.loading ? "loading" : ""}`}>
+												<Selection newCommentFunc={this.props.onNewCommentClick}
+																	sourceURI={this.props.match.url}
+																	allowComments={this.state.allowComments}>
+													<ProcessDocumentHtml {...documentHtmlProps} />
+												</Selection>
+											</div>
+										</div>
+
+									</div>
+								</main>
+							</div>
 						</div>
 					</div>
-				</div>
+
+				</UserContext.Consumer>
+				
 			</Fragment>
 		);
 	}

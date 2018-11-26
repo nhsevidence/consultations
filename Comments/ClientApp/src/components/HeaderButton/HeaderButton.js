@@ -16,11 +16,11 @@ type PropsType = {
 	},
 }
 
-export class HeaderButtons extends PureComponent<PropsType> {
+export class HeaderButton extends PureComponent<PropsType> {
 
 	render() {
 		return (
-			
+			<div>hello</div>	
 		);
 	}
 

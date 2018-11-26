@@ -33,6 +33,11 @@ export class DocumentView extends Component<PropsType, StateType> {
 		};
 	}
 
+	updateCommentCountHandler = (e: Event, commentCount: number) => {
+		
+		this.documentWithRouter.updateCommentCount(e, commentCount);
+	};
+
 	newCommentHandler = (e: Event, incomingComment: CommentType) => {
 		// this method is passed down to <DocumentWithRouter /> by props.
 		// The function is the one we're using from <Drawer />
@@ -49,11 +54,13 @@ export class DocumentView extends Component<PropsType, StateType> {
 						<CommentListWithRouter
 							announceAssertive={announceAssertive}
 							announcePolite={announcePolite}
+							updateResponseCount={this.updateCommentCountHandler}
 							wrappedComponentRef={component => (this.commentList = component)} />}
 				</LiveMessenger>
 				
 				{/* Passing the function we're using from <CommentListWithRouter /> to DocWithRouter via props*/}
-				<DocumentWithRouter onNewCommentClick={this.newCommentHandler} />
+				<DocumentWithRouter onNewCommentClick={this.newCommentHandler}
+					wrappedComponentRef={component => (this.documentWithRouter = component)} />
 			</Fragment>
 		);
 	}

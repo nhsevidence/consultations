@@ -35,6 +35,7 @@ type PropsType = {
 		search: string
 	},
 	announceAssertive: Function,
+	updateResponseCount: Function,
 };
 
 type StateType = {
@@ -130,6 +131,7 @@ export class CommentList extends Component<PropsType, StateType> {
 		this.setState({
 			drawerMobile: this.isMobile(),
 		});
+		this.props.updateResponseCount(125);
 	}
 
 	componentDidUpdate(prevProps: PropsType) {
