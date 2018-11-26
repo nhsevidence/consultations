@@ -9,11 +9,12 @@ namespace Comments.Controllers.Web
     /// <summary>
     /// This controller maps to the root of the app, i.e. "/".
     /// it will only get hit on local dev machines. On the server, the root of the app is served by orchard via varnish.
-    /// 
-    /// this controller is important for local dev, as without it nice accounts won't work. 
-    /// 
-    /// the reason for that is that nice accounts posts to the root of the website after logging in, then redirects after that. 
+    ///
+    /// this controller is important for local dev, as without it nice accounts won't work.
+    ///
+    /// the reason for that is that nice accounts posts to the root of the website after logging in, then redirects after that.
     /// </summary>
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("")]
     public class RootController : Controller
     {

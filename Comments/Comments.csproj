@@ -29,6 +29,7 @@
     <PackageReference Include="NICE.Auth.NetCore" Version="1.0.79" />
     <PackageReference Include="NICE.Feeds" Version="1.0.125" />
     <PackageReference Include="NICE.Logging" Version="5.0.52" />
+    <PackageReference Include="NSwag.AspNetCore" Version="12.0.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
   </ItemGroup>
 

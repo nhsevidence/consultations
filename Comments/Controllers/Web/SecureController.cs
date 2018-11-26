@@ -13,6 +13,7 @@ namespace Comments.Controllers.Web
     /// <summary>
     /// This controller is just here for test purposes
     /// </summary>
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("secure")]
     [Authorize]
     public class SecureController : Controller

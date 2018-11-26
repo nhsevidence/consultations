@@ -6,7 +6,7 @@ using System;
 namespace Comments.Controllers.Web
 {
 	[Authorize(Roles="Administrator")]
-	
+
 	public class AdminController : Controller
     {
 	    private readonly IUserService _userService;
@@ -23,6 +23,7 @@ namespace Comments.Controllers.Web
 		/// </summary>
 		/// <param name="userId"></param>
 		/// <returns></returns>
+		[ApiExplorerSettings(IgnoreApi = true)]
 		[Route("consultations/admin/DeleteAllSubmissionsFromUser")]
 		public ActionResult DeleteAllSubmissionsFromUser(string userId)
 	    {
@@ -42,6 +43,7 @@ namespace Comments.Controllers.Web
 		/// /consultations/admin/DeleteAllSubmissionsFromSelf
 		/// </summary>
 		/// <returns></returns>
+		[ApiExplorerSettings(IgnoreApi = true)]
 		[Route("consultations/admin/DeleteAllSubmissionsFromSelf")]
 	    public ActionResult DeleteAllSubmissionsFromSelf()
 		{
@@ -59,6 +61,7 @@ namespace Comments.Controllers.Web
 		/// </summary>
 		/// <param name="consultationId"></param>
 		/// <returns></returns>
+		[ApiExplorerSettings(IgnoreApi = true)]
 		[Route("consultations/admin/InsertQuestionsForDocument1And2InConsultation")]
 	    public ActionResult InsertQuestionsForDocument1And2InThisConsultation(int consultationId)
 	    {
@@ -75,6 +78,7 @@ namespace Comments.Controllers.Web
 	    /// </summary>
 	    /// <param name="consultationId"></param>
 	    /// <returns></returns>
+	    [ApiExplorerSettings(IgnoreApi = true)]
 	    [Route("consultations/admin/InsertQuestionsForConsultation")]
 	    public ActionResult InsertQuestionsForConsultation(int consultationId)
 	    {
@@ -91,6 +95,7 @@ namespace Comments.Controllers.Web
 	    /// </summary>
 	    /// <param name="consultationId"></param>
 	    /// <returns></returns>
+	    [ApiExplorerSettings(IgnoreApi = true)]
 	    [Route("consultations/admin/InsertQuestionsForCfGConsultation")]
 	    public ActionResult InsertQuestionsForCfGConsultation(int consultationId)
 	    {
@@ -106,6 +111,7 @@ namespace Comments.Controllers.Web
 		/// /consultations/admin/DeleteAllData
 		/// </summary>
 		/// <returns></returns>
+		[ApiExplorerSettings(IgnoreApi = true)]
 		[Route("consultations/admin/DeleteAllData")]
 	    public ActionResult DeleteAllData()
 	    {
@@ -119,6 +125,7 @@ namespace Comments.Controllers.Web
 		/// /consultations/admin/GetData?table=Comment
 		/// </summary>
 		/// <returns></returns>
+		[ApiExplorerSettings(IgnoreApi = true)]
 		[Route("consultations/admin/GetData")]
 	    public JsonResult GetData(string table)
 		{

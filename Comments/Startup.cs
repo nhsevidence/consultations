@@ -20,83 +20,84 @@ using Microsoft.AspNetCore.Mvc;
 using ConsultationsContext = Comments.Models.ConsultationsContext;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using NICE.Auth.NetCore.Services;
+using NSwag;
+using NSwag.SwaggerGeneration.Processors.Security;
 
 namespace Comments
 {
-    public class Startup
-    {
-        ILogger _logger;
+	public class Startup
+	{
+		ILogger _logger;
 
-        public Startup(IConfiguration configuration, IHostingEnvironment env, ILogger<Startup> logger)
-        {
-            Configuration = configuration;
-            Environment = env;
-            _logger = logger;
-        }
-        
-        public IConfiguration Configuration { get; }
+		public Startup(IConfiguration configuration, IHostingEnvironment env, ILogger<Startup> logger)
+		{
+			Configuration = configuration;
+			Environment = env;
+			_logger = logger;
+		}
 
-        public IHostingEnvironment Environment { get; }
+		public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            if (Environment.IsDevelopment())
-            {
-                AppSettings.Configure(services, Configuration, @"c:\"); 
-            }
-            else
-            {
-                AppSettings.Configure(services, Configuration, Environment.ContentRootPath);
-            }
+		public IHostingEnvironment Environment { get; }
 
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.TryAddSingleton<ISeriLogger, SeriLogger>();
-            services.TryAddSingleton<IAuthenticateService, AuthService>();
-            services.TryAddTransient<IUserService, UserService>();
+		// This method gets called by the runtime. Use this method to add services to the container.
+		public void ConfigureServices(IServiceCollection services)
+		{
+			if (Environment.IsDevelopment())
+			{
+				AppSettings.Configure(services, Configuration, @"c:\");
+			}
+			else
+			{
+				AppSettings.Configure(services, Configuration, Environment.ContentRootPath);
+			}
+
+			services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			services.TryAddSingleton<ISeriLogger, SeriLogger>();
+			services.TryAddSingleton<IAuthenticateService, AuthService>();
+			services.TryAddTransient<IUserService, UserService>();
 
 			var contextOptionsBuilder = new DbContextOptionsBuilder<ConsultationsContext>();
-            services.TryAddSingleton<IDbContextOptionsBuilderInfrastructure>(contextOptionsBuilder);
+			services.TryAddSingleton<IDbContextOptionsBuilderInfrastructure>(contextOptionsBuilder);
 
-            services.AddDbContext<ConsultationsContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+			services.AddDbContext<ConsultationsContext>(options =>
+				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.TryAddTransient<ICommentService, CommentService>();
-            services.TryAddTransient<IConsultationService, ConsultationService>();
-            
-            services.TryAddTransient<IFeedReaderService>(provider => new FeedReaderService(new RemoteSystemReader(null), AppSettings.Feed));
-            services.TryAddTransient<IFeedService, FeedService>();
-            services.TryAddTransient<IAnswerService, AnswerService>();
-            services.TryAddTransient<IQuestionService, QuestionService>();
-	        services.TryAddTransient<ISubmitService, SubmitService>();
+			services.TryAddTransient<ICommentService, CommentService>();
+			services.TryAddTransient<IConsultationService, ConsultationService>();
+
+			services.TryAddTransient<IFeedReaderService>(provider =>
+				new FeedReaderService(new RemoteSystemReader(null), AppSettings.Feed));
+			services.TryAddTransient<IFeedService, FeedService>();
+			services.TryAddTransient<IAnswerService, AnswerService>();
+			services.TryAddTransient<IQuestionService, QuestionService>();
+			services.TryAddTransient<ISubmitService, SubmitService>();
 			services.TryAddTransient<IAdminService, AdminService>();
-	        services.TryAddTransient<IExportService, ExportService>();
+			services.TryAddTransient<IExportService, ExportService>();
 			services.TryAddSingleton<IEncryption, Encryption>();
-	        services.TryAddTransient<IExportToExcel, ExportToExcel>();
-	        services.TryAddTransient<IStatusService, StatusService>();
+			services.TryAddTransient<IExportToExcel, ExportToExcel>();
+			services.TryAddTransient<IStatusService, StatusService>();
 			services.TryAddTransient<IConsultationListService, ConsultationListService>();
 
-			// Add authentication 
+			// Add authentication
 			services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = AuthOptions.DefaultScheme;
-                options.DefaultChallengeScheme = AuthOptions.DefaultScheme;
-            })
-            .AddNICEAuth(options =>
-            {
-                // todo: Configure options here from AppSettings
-            });
+				{
+					options.DefaultAuthenticateScheme = AuthOptions.DefaultScheme;
+					options.DefaultChallengeScheme = AuthOptions.DefaultScheme;
+				})
+				.AddNICEAuth(options =>
+				{
+					// todo: Configure options here from AppSettings
+				});
 
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new ResponseCacheAttribute() { NoStore = true, Location = ResponseCacheLocation.None });
-            });
+			services.AddMvc(options =>
+			{
+				options.Filters.Add(new ResponseCacheAttribute()
+					{NoStore = true, Location = ResponseCacheLocation.None});
+			}).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // In production, static files are served from the pre-built files, rather than proxied via react dev server
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
+			// In production, static files are served from the pre-built files, rather than proxied via react dev server
+			services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
 
 			// Uncomment this if you want to debug server node
 			//if (Environment.IsDevelopment())
@@ -117,195 +118,240 @@ namespace Comments
 			//}
 
 
-	        if (!Environment.IsDevelopment())
-	        {
-		        services.AddHttpsRedirection(options =>
-		        {
-			        options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-			        options.HttpsPort = 443;
-		        });
-	        }
+			if (!Environment.IsDevelopment())
+			{
+				services.AddHttpsRedirection(options =>
+				{
+					options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+					options.HttpsPort = 443;
+				});
+			}
 
-	        services.Configure<ForwardedHeadersOptions>(options =>
+			services.Configure<ForwardedHeadersOptions>(options =>
 			{
 				options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
 				options.KnownProxies.Clear();
 			});
 
 			services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials());
-            }); //adding CORS for Warren. todo: maybe move this into the isDevelopment block..
-            
-            services.AddOptions();
-        }
+			{
+				options.AddPolicy("CorsPolicy",
+					builder => builder.AllowAnyOrigin()
+						.AllowAnyMethod()
+						.AllowAnyHeader()
+						.AllowCredentials());
+			}); //adding CORS for Warren. todo: maybe move this into the isDevelopment block..
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ISeriLogger seriLogger, IApplicationLifetime appLifetime, IAuthenticateService authenticateService)
-        {           
-            seriLogger.Configure(loggerFactory, Configuration, appLifetime, env);
-            var startupLogger = loggerFactory.CreateLogger<Startup>();
+			services.AddOptions();
 
-            if (env.IsDevelopment())
-            {
-	            app.UseExceptionHandler(Constants.ErrorPath);
+			services
+				.AddSwaggerDocument(document =>
+				{
+					document.DocumentName = "openapiv2";
+					document.Title = "Consultations API";
+					document.DocumentProcessors.Add(
+						new SecurityDefinitionAppender("auth", new SwaggerSecurityScheme
+						{
+							Type = SwaggerSecuritySchemeType.Basic,
+							Name = "Auth",
+							In = SwaggerSecurityApiKeyLocation.Header
+						})
+					);
+				})
+				.AddOpenApiDocument(document =>
+				{
+					document.DocumentName = "openapiv3";
+					document.Title = "Consultations API";
+					document.DocumentProcessors.Add(
+						new SecurityDefinitionAppender("auth", new SwaggerSecurityScheme
+						{
+							Type = SwaggerSecuritySchemeType.Basic,
+							Name = "Auth",
+							In = SwaggerSecurityApiKeyLocation.Header
+						})
+					);
+				});
+		}
+
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+			ISeriLogger seriLogger, IApplicationLifetime appLifetime, IAuthenticateService authenticateService)
+		{
+			seriLogger.Configure(loggerFactory, Configuration, appLifetime, env);
+			var startupLogger = loggerFactory.CreateLogger<Startup>();
+
+			if (env.IsDevelopment())
+			{
+				app.UseExceptionHandler(Constants.ErrorPath);
 				//app.UseDeveloperExceptionPage();
-                loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-                loggerFactory.AddDebug();
+				loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+				loggerFactory.AddDebug();
 
 				app.UseStaticFiles(); //uses the wwwroot folder, only for dev. on other service the root is varnish
 			}
-            else
-            {
-	            app.UseExceptionHandler(Constants.ErrorPath);
+			else
+			{
+				app.UseExceptionHandler(Constants.ErrorPath);
 
-	            app.UseStatusCodePagesWithReExecute(Constants.ErrorPath + "/{0}");
+				app.UseStatusCodePagesWithReExecute(Constants.ErrorPath + "/{0}");
 			}
-
-	        
 
 
 			app.UseCors("CorsPolicy");
 
-            // Because in dev mode we proxy to a react dev server (which has to run in the root e.g. http://localhost:3000)
-            // we re-write paths for static files to map them to the root
-            if (env.IsDevelopment())
-            {
-                app.Use((context, next) =>
-                {
-                    var reqPath = context.Request.Path;
-                    if (reqPath.HasValue && reqPath.Value.Contains("."))
-                    {
-						// Map static files paths to the root, for use within the 
+			// Because in dev mode we proxy to a react dev server (which has to run in the root e.g. http://localhost:3000)
+			// we re-write paths for static files to map them to the root
+			if (env.IsDevelopment())
+			{
+				app.Use((context, next) =>
+				{
+					var reqPath = context.Request.Path;
+					if (reqPath.HasValue && reqPath.Value.Contains(".") && !reqPath.Value.Contains("openapi"))
+					{
+						// Map static files paths to the root, for use within the
 						if (reqPath.Value.Contains("/consultations"))
 						{
 							context.Request.Path = reqPath.Value.Replace("/consultations", "");
 						}
-						else if (reqPath.Value.IndexOf("favicon.ico", StringComparison.OrdinalIgnoreCase) == -1 && reqPath.Value.IndexOf("hot-update", StringComparison.OrdinalIgnoreCase) == -1)
+						else if (reqPath.Value.IndexOf("favicon.ico", StringComparison.OrdinalIgnoreCase) == -1 &&
+						         reqPath.Value.IndexOf("hot-update", StringComparison.OrdinalIgnoreCase) == -1)
 						{
 							context.Response.StatusCode = 404;
-							throw new FileNotFoundException($"Path {reqPath.Value} could not be found. Did you mean to load '/consultations{context.Request.Path.Value  }' instead?");
+							throw new FileNotFoundException(
+								$"Path {reqPath.Value} could not be found. Did you mean to load '/consultations{context.Request.Path.Value}' instead?");
 						}
-                    }
+					}
 
-                    return next();
-                });
-            }
+					return next();
+				});
+			}
 
-	        app.UseForwardedHeaders();
-            app.UseAuthentication();
-            app.UseSpaStaticFiles(new StaticFileOptions { RequestPath = "/consultations" });
+			app.UseForwardedHeaders();
+			app.UseAuthentication();
+			app.UseSpaStaticFiles(new StaticFileOptions {RequestPath = "/consultations"});
 
-		    if (!env.IsDevelopment() && !env.IsIntegrationTest())
-		    {
-			    app.UseHttpsRedirection();
-		    }
+			if (!env.IsDevelopment() && !env.IsIntegrationTest())
+			{
+				app.UseHttpsRedirection();
+			}
 
 
-	        app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
-
-	            routes.MapRoute(
-		            name: "PublishedRedirectWithoutDocument",
-		            template: "consultations/{consultationId:int}",
-		            defaults: new { controller = "Redirect", action = "PublishedRedirectWithoutDocument" });
+			app.UseMvc(routes =>
+			{
+				routes.MapRoute(
+					name: "default",
+					template: "{controller}/{action=Index}/{id?}");
 
 				routes.MapRoute(
-		            name: "PublishedRedirect",
-		            template: "consultations/{consultationId:int}/{documentId:int}",
-		            defaults: new {controller = "Redirect", action = "PublishedDocumentWithoutChapter"});
+					name: "PublishedRedirectWithoutDocument",
+					template: "consultations/{consultationId:int}",
+					defaults: new {controller = "Redirect", action = "PublishedRedirectWithoutDocument"});
 
-	            routes.MapRoute(
-		            name: "PreviewRedirect",
-		            template: "consultations/preview/{reference}/consultation/{consultationId:int}/document/{documentId:int}",
-		            defaults: new { controller = "Redirect", action = "PreviewDocumentWithoutChapter" });
+				routes.MapRoute(
+					name: "PublishedRedirect",
+					template: "consultations/{consultationId:int}/{documentId:int}",
+					defaults: new {controller = "Redirect", action = "PublishedDocumentWithoutChapter"});
 
+				routes.MapRoute(
+					name: "PreviewRedirect",
+					template:
+					"consultations/preview/{reference}/consultation/{consultationId:int}/document/{documentId:int}",
+					defaults: new {controller = "Redirect", action = "PreviewDocumentWithoutChapter"});
 			});
 
-            //// here you can see we make sure it doesn't start with /api, if it does, it'll 404 within .NET if it can't be found
-            //app.MapWhen(x => !x.Request.Path.Value.StartsWith("/consultations/api", StringComparison.OrdinalIgnoreCase), builder =>
-            //{
-            //    builder.UseMvc(routes =>
-            //    {
-            //        routes.MapSpaFallbackRoute(
-            //            name: "spa-fallback",
-            //            defaults: new { controller = "Error", action = "Index" });
-            //    });
-            //});
+			app.MapWhen(x => !x.Request.Path.Value.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase), builder =>
+				{
+					builder.Use((context, next) =>
+					{
+						var httpRequestFeature = context.Features.Get<IHttpRequestFeature>();
 
-            // DotNetCore SpaServices requires RawTarget property, which isn't set on a TestServer.
-            // So set it here to allow integration tests to work with SSR via SpaServices
-            app.Use((context, next) =>
-            {
-                var httpRequestFeature = context.Features.Get<IHttpRequestFeature>();
+						if (httpRequestFeature != null && string.IsNullOrEmpty(httpRequestFeature.RawTarget))
+							httpRequestFeature.RawTarget = httpRequestFeature.Path;
+						return next();
+					});
 
-                if (httpRequestFeature != null && string.IsNullOrEmpty(httpRequestFeature.RawTarget))
-                    httpRequestFeature.RawTarget = httpRequestFeature.Path;
+					builder.UseSpa(spa =>
+					{
+						spa.Options.SourcePath = "ClientApp";
 
-                return next();
-            });
+						spa.UseSpaPrerendering(options =>
+						{
+							options.ExcludeUrls = new[] {"/sockjs-node"};
+							// Pass data in from .NET into the SSR. These come through as `params` within `createServerRenderer` within the server side JS code.
+							// See https://docs.microsoft.com/en-us/aspnet/core/spa/angular?tabs=visual-studio#pass-data-from-net-code-into-typescript-code
+							options.SupplyData = (context, data) =>
+							{
+								data["isHttpsRequest"] = context.Request.IsHttps;
+								var cookieForSSR =
+									context.Request.Cookies[NICE.Auth.NetCore.Helpers.Constants.DefaultCookieName];
+								if (cookieForSSR != null)
+								{
+									data["cookies"] =
+										$"{NICE.Auth.NetCore.Helpers.Constants.DefaultCookieName}={cookieForSSR}";
+								}
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
+								data["isAuthorised"] = context.User.Identity.IsAuthenticated;
+								data["displayName"] = context.User.Identity.Name;
+								data["signInURL"] = authenticateService.GetLoginURL(context.Request.Path);
+								data["registerURL"] = authenticateService.GetRegisterURL(context.Request.Path);
+								data["requestURL"] = context.Request.Path;
+								data["accountsEnvironment"] = AppSettings.Environment.AccountsEnvironment;
+								//data["user"] = context.User; - possible security implications here, surfacing claims to the front end. might be ok, if just server-side.
+								// Pass further data in e.g. user/authentication data
+							};
+							options.BootModulePath = $"{spa.Options.SourcePath}/src/server/index.js";
+						});
 
-                spa.UseSpaPrerendering(options =>
-                {
-                    options.ExcludeUrls = new[] { "/sockjs-node" };
-                    // Pass data in from .NET into the SSR. These come through as `params` within `createServerRenderer` within the server side JS code.
-                    // See https://docs.microsoft.com/en-us/aspnet/core/spa/angular?tabs=visual-studio#pass-data-from-net-code-into-typescript-code
-                    options.SupplyData = (context, data) =>
-                    {
-                        data["isHttpsRequest"] = context.Request.IsHttps;
-                        var cookieForSSR = context.Request.Cookies[NICE.Auth.NetCore.Helpers.Constants.DefaultCookieName];
-                        if (cookieForSSR != null)
-                        {
-                            data["cookies"] = $"{NICE.Auth.NetCore.Helpers.Constants.DefaultCookieName}={cookieForSSR}";
-                        }
-                        data["isAuthorised"] = context.User.Identity.IsAuthenticated;
-	                    data["displayName"] = context.User.Identity.Name;
-	                    data["signInURL"] = authenticateService.GetLoginURL(context.Request.Path);
-	                    data["registerURL"] = authenticateService.GetRegisterURL(context.Request.Path);
-	                    data["requestURL"] = context.Request.Path;
-	                    data["accountsEnvironment"] = AppSettings.Environment.AccountsEnvironment;
-	                    //data["user"] = context.User; - possible security implications here, surfacing claims to the front end. might be ok, if just server-side.
-	                    // Pass further data in e.g. user/authentication data
-                    };
-                    options.BootModulePath = $"{spa.Options.SourcePath}/src/server/index.js";
-                });
+						if (env.IsDevelopment())
+						{
+							// Default timeout is 30 seconds so extend it in dev mode because sometimes the react server can take a while to start up
+							spa.Options.StartupTimeout = TimeSpan.FromMinutes(1);
 
-                if (env.IsDevelopment())
-                {
-                    // Default timeout is 30 seconds so extend it in dev mode because sometimes the react server can take a while to start up
-                    spa.Options.StartupTimeout = TimeSpan.FromMinutes(1);
+							// If you have trouble with the react server in dev mode (sometime in can be slow and you get timeout error, then use
+							// `UseProxyToSpaDevelopmentServer` below rather than `UseReactDevelopmentServer`.
+							// This proxies to a manual CRA server (run `npm start` from the ClientApp folder) instead of DotNetCore launching one automatically.
+							// This can be quicker. See https://docs.microsoft.com/en-us/aspnet/core/spa/react?tabs=visual-studio#run-the-cra-server-independently
+							spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+							// spa.UseReactDevelopmentServer(npmScript: "start");
+						}
+					});
+				});
 
-                    // If you have trouble with the react server in dev mode (sometime in can be slow and you get timeout error, then use
-                    // `UseProxyToSpaDevelopmentServer` below rather than `UseReactDevelopmentServer`.
-                    // This proxies to a manual CRA server (run `npm start` from the ClientApp folder) instead of DotNetCore launching one automatically.
-                    // This can be quicker. See https://docs.microsoft.com/en-us/aspnet/core/spa/react?tabs=visual-studio#run-the-cra-server-independently
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
-                   // spa.UseReactDevelopmentServer(npmScript: "start");
-                }
-            });
+			// OpenAPI 2.0
+			app.UseSwagger(options =>
+			{
+				options.DocumentName = "openapiv2";
+				options.Path = "/openapiv2/v1/comments-api.json";
+			});
+			app.UseSwaggerUi3(options =>
+			{
+				options.Path = "/openapiv2";
+				options.DocumentPath = "/openapiv2/v1/comments-api.json";
+			});
+			app.UseReDoc(options =>
+			{
+				options.Path = "/openapiv2_redoc";
+				options.DocumentPath = "/openapiv2/v1/comments-api.json";
+			});
 
-            //try
-            //{
-            //    using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            //    {
-            //         serviceScope.ServiceProvider.GetService<ConsultationsContext>().Database.Migrate();
-            //    }
-            //}
-            //catch(Exception ex)
-            //{
-            //    startupLogger.LogError(String.Format("EF Migrations Error: {0}", ex));
-            //}
+			// OpenAPI 3.0
+			app.UseSwagger(options =>
+			{
+				options.DocumentName = "openapiv3";
+				options.Path = "/openapiv3/v1/comments-api.json";
+			});
+
+			app.UseSwaggerUi3(options =>
+			{
+				options.Path = "/openapiv3";
+				options.DocumentPath = "/openapiv3/v1/comments-api.json";
+			});
+			app.UseReDoc(options =>
+			{
+				options.Path = "/openapiv3_redoc";
+				options.DocumentPath = "/openapiv3/v1/comments-api.json";
+			});
+
 		}
-    }
+	}
 }

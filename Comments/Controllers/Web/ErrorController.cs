@@ -14,7 +14,7 @@ namespace Comments.Controllers.Web
 	/// <summary>
 	/// This error controller is only shown if there's a problem showing the error using react..
 	/// </summary>
-	
+
 	public class ErrorController : Controller
     {
 	    private readonly ILogger _logger;
@@ -24,6 +24,7 @@ namespace Comments.Controllers.Web
 			_logger = logger;
 		}
 
+	    [ApiExplorerSettings(IgnoreApi = true)]
 	    [Route(Constants.ErrorPath)]
 	    [Route(Constants.ErrorPath + "/{statusCode}")]
 		public ActionResult Index(int statusCode)
