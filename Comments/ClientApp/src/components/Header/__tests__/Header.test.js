@@ -1,7 +1,7 @@
 import React from "react";
 import { shallow, mount } from "enzyme";
 
-import { HeaderButtons } from "../HeaderButtons";
+import { Header } from "../Header";
 import toJson from "enzyme-to-json";
 
 describe("[ClientApp] ", () => {
@@ -69,24 +69,5 @@ describe("[ClientApp] ", () => {
 				})
 			).toMatchSnapshot();
 		});
-
-		it("should display correctly when consulation has no end date", () => {
-			const FakeProps = {
-				title: "My title has changed",
-				subtitle1: "Subtitle 1",
-				consultationState: {
-					endDate: "",
-					consultationIsOpen: false,
-					consultationHasNotStartedYet: false,
-				},
-			};
-			const wrapper = mount(
-				<Header {...FakeProps}/>
-			);
-			
-			expect(wrapper.find(".page-header__lead").text()).toEqual("This consultation has not ended");
-
-		});
-
 	});
 });

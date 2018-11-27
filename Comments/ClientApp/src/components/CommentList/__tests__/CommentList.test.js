@@ -45,6 +45,7 @@ describe("[ClientApp] ", () => {
 				commentId: 1,
 			},
 			viewComments: true,
+			updateResponseCount: jest.fn(),
 		};
 
 		afterEach(() => {
