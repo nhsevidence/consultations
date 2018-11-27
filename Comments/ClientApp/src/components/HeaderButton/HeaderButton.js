@@ -1,24 +1,27 @@
 // @flow
 
 import React, {Fragment, PureComponent} from "react";
-import Moment from "react-moment";
+import {Link} from "react-router-dom";
 
 type PropsType = {
 	isAuthorised: boolean,
 	responseCount?: number,
+	consultationId: number,
 }
 
 export class HeaderButton extends PureComponent<PropsType> {
 
 	render() {
+
+		const showButton = ((this.props.isAuthorised) && 
+							(typeof(this.props.responseCount) != undefined && this.props.responseCount != null && this.props.responseCount > 0));
+
 		return (
-			<div>
-				{this.props.isAuthorised && this.props.responseCount > 0 ?
-					<button>Hello
-					</button>
+			<Fragment>
+				{showButton ? 
+					<Link to={`/${this.props.consultationId}/review`}>Hello</Link>					
 					: null}
-			</div>
+			</Fragment>
 		);
 	}
-
 }
