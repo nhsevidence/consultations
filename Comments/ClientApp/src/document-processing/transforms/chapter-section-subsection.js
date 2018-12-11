@@ -16,6 +16,10 @@ export const processChapterSectionSubsection = (node, onNewCommentClick, sourceU
 
 	const htmlElementID = (commentOn === "section" || commentOn === "subsection") ? node.attribs.id : "";
 
+	if (typeof(node.attribs) !== undefined){ //this gets rid of the tooltip added to the anchor in indev. it's just not really needed on text.
+		node.attribs.title = "";
+	}
+
 	return (
 		<Fragment key={htmlElementID}>
 			{allowComments &&
@@ -25,6 +29,7 @@ export const processChapterSectionSubsection = (node, onNewCommentClick, sourceU
 					data-gtm-action="Clicked"
 					data-gtm-label={`Comment on ${commentOn || "chapter"}`}
 					data-qa-sel="in-text-comment-button"
+					title={`Comment on ${commentOn || "chapter"}`}
 					className="document-comment-container__commentButton"
 					tabIndex={0}
 					onClick={e => {

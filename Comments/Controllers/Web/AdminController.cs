@@ -108,6 +108,22 @@ namespace Comments.Controllers.Web
 	    }
 
 		/// <summary>
+		/// /consultations/admin/InsertQuestionsForQSConsultation?consultationId=1
+		/// </summary>
+		/// <param name="consultationId"></param>
+		/// <returns></returns>
+		[Route("consultations/admin/InsertQuestionsForQSConsultation")]
+	    public ActionResult InsertQuestionsForQSConsultation(int consultationId)
+	    {
+		    if (consultationId < 1)
+			    throw new ArgumentException("invalid consultation id", nameof(consultationId));
+
+		    var rowCount = _adminService.InsertQuestionsForQSConsultation(consultationId);
+
+		    return Content($"Row count deleted/updated: {rowCount}");
+	    }
+
+		/// <summary>
 		/// /consultations/admin/DeleteAllData
 		/// </summary>
 		/// <returns></returns>

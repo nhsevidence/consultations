@@ -9,6 +9,7 @@ import { MemoryRouter } from "react-router";
 import { Document } from "../Document";
 import ChapterData from "./Chapter";
 import ConsultationData from "./Consultation";
+import ConsultationQuestionsOnlyData from "./ConsultationQuestionsOnly";
 import DocumentsData from "./Documents";
 import { nextTick } from "../../../helpers/utils";
 import toJson from "enzyme-to-json";
@@ -90,12 +91,64 @@ describe("[ClientApp] ", () => {
 			]).then(async () => {
 				await nextTick();
 				wrapper.update();
+				expect(wrapper.find("Tutorial").length).toEqual(1);
 				expect(
 					toJson(wrapper, {
 						noKey: true,
 						mode: "deep",
 					})
 				).toMatchSnapshot();
+			});
+		});
+
+		it("should not contain tutorial if the consultation does not support comments", () => {
+			const mock = new MockAdapter(axios);
+
+			const wrapper = mount(
+				<MemoryRouter>
+					<Document {...fakeProps} />
+				</MemoryRouter>
+			);
+
+			let documentsPromise = new Promise(resolve => {
+				mock
+					.onGet("/consultations/api/Documents?consultationId=1")
+					.reply(() => {
+						resolve();
+						return [200, DocumentsData];
+					});
+			});
+
+			let consulatationPromise = new Promise(resolve => {
+				mock
+					.onGet("/consultations/api/Consultation?consultationId=1&isReview=false")
+					.reply(() => {
+						resolve();
+						return [200, ConsultationQuestionsOnlyData];
+					});
+			});
+
+			let chapterPromise = new Promise(resolve => {
+				mock
+					.onGet(
+						"/consultations/api/Chapter?consultationId=1&documentId=1&chapterSlug=introduction"
+					)
+					.reply(() => {
+						resolve();
+						return [200, ChapterData];
+					});
+			});
+
+			return Promise.all([
+				documentsPromise,
+				consulatationPromise,
+				chapterPromise,
+			]).then(async () => {
+				await nextTick();
+				wrapper.update();
+
+				expect(wrapper.find("Tutorial").length).toEqual(0);
+
 			});
 		});
 

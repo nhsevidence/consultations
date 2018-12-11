@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://niceorg:1024/",
+      "applicationUrl": "http://niceorg/",
       "sslPort": 0
     }
   },
@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "consultations/admin/download",
+      "launchUrl": "consultations/323/6/overview-of-2018-surveillance-methods",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -3,9 +3,11 @@ using System.Linq;
 using System.Security.Authentication;
 using System.Security.Claims;
 using Comments.Common;
+using Comments.Configuration;
 using Comments.Models;
 using Comments.ViewModels;
 using Microsoft.AspNetCore.Http;
+using NICE.Feeds;
 using Location = Comments.Models.Location;
 
 namespace Comments.Services
@@ -21,10 +23,12 @@ namespace Comments.Services
     public class ExportService : IExportService
     {
 	    private readonly ConsultationsContext _context;
+	    private readonly IUserService _userService;
 	    private readonly IConsultationService _consultationService;
+	    private readonly IFeedService _feedService;
 	    private readonly ClaimsPrincipal _niceUser;
 
-		public ExportService(ConsultationsContext consultationsContext, IUserService userService, IConsultationService consultationService, IHttpContextAccessor httpContextAccessor)
+		public ExportService(ConsultationsContext consultationsContext, IUserService userService, IConsultationService consultationService, IHttpContextAccessor httpContextAccessor, IFeedService feedService)
 	    {
 		    var user = userService.GetCurrentUser();
 		    if (!user.IsAuthorised)
@@ -38,11 +42,21 @@ namespace Comments.Services
 		    }
 		    
 			_context = consultationsContext;
+		    _userService = userService;
 		    _consultationService = consultationService;
-		}
+		    _feedService = feedService;
+	    }
 
 	    public (IEnumerable<Models.Comment> comment, IEnumerable<Models.Answer> answer, IEnumerable<Models.Question> question, Validate valid) GetAllDataForConsulation(int consultationId)
 	    {
+		    var userRoles = _userService.GetUserRoles().ToList();
+		    var isAdminUser = userRoles.Any(role => AppSettings.ConsultationListConfig.DownloadRoles.AdminRoles.Contains(role));
+			var consultation = _feedService.GetConsultationList().Single(c => c.ConsultationId.Equals(consultationId));
+		    if (!isAdminUser && !userRoles.Contains(consultation.AllowedRole))
+		    {
+				return (null, null, null, new Validate(valid: false, unauthorised: true, message: $"User does not have access to download this type of consultation."));
+			}
+
 			var sourceURI = ConsultationsUri.CreateConsultationURI(consultationId);
 		    var commentsInDB = _context.GetAllSubmittedCommentsForURI(sourceURI);
 		    var answersInDB = _context.GetAllSubmittedAnswersForURI(sourceURI);
@@ -51,7 +65,7 @@ namespace Comments.Services
 			if (commentsInDB == null && answersInDB == null && questionsInDB == null)
 				return (null, null, null, new Validate(valid: false, notFound: true, message: $"Consultation id:{consultationId} not found trying to get all data for consultation"));
 
-			return (commentsInDB, answersInDB, questionsInDB, null);
+			return (commentsInDB, answersInDB, questionsInDB, new Validate(true));
 	    }
 
 	    public (IEnumerable<Models.Comment> comment, IEnumerable<Models.Answer> answer, IEnumerable<Models.Question> question, Validate valid) GetAllDataForConsulationForCurrentUser(int consultationId)
@@ -65,7 +79,7 @@ namespace Comments.Services
 		    if (commentsInDB == null && answersInDB == null && questionsInDB == null)
 			    return (null, null, null, new Validate(valid: false, notFound: true, message: $"Consultation id:{consultationId} not found trying to get all data for consultation"));
 
-		    return (commentsInDB, answersInDB, questionsInDB, null);
+		    return (commentsInDB, answersInDB, questionsInDB, new Validate(true));
 	    }
 
 		public (string ConsultationName, string DocumentName, string ChapterName) GetLocationData(Location location)

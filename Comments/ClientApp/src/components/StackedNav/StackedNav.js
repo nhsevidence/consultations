@@ -30,7 +30,7 @@ export class StackedNav extends PureComponent<PropsType> {
 	};
 
 	render() {
-		if (!this.props.links) return null;
+		if (!this.props.links || !this.props.links.links || this.props.links.links.length === 0) return null;
 		const {title, links} = this.props.links;
 		return (
 			<nav className="stacked-nav" aria-label={title}>

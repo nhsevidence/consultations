@@ -340,18 +340,6 @@ Array [
                                     data-qa-sel="nav-list-item"
                                 >
                                     <a
-                                        aria-current="page"
-                                        href="/1/1/introduction"
-                                        onClick={[Function]}
-                                    >
-                                        Unstable angina and NSTEMI
-                                    </a>
-                                </li>
-                                <li
-                                    className="stacked-nav__list-item"
-                                    data-qa-sel="nav-list-item"
-                                >
-                                    <a
                                         href="/1/2/overview"
                                         onClick={[Function]}
                                     >
@@ -569,6 +557,7 @@ Array [
                                             data-qa-sel="in-text-comment-button"
                                             onClick={[Function]}
                                             tabIndex={0}
+                                            title="Comment on chapter"
                                         >
                                             <span
                                                 aria-hidden="true"
@@ -592,7 +581,7 @@ Array [
                                                     "position": "relative",
                                                   }
                                             }
-                                            title="Comment on chapter"
+                                            title=""
                                             xmlns=""
                                         >
                                             Introduction 
