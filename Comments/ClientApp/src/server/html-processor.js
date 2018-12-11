@@ -60,7 +60,7 @@ export const replaceRootContent = (html: string, rootContent: string): string =>
 // Replaces non consultation paths
 export const replaceRelativePaths = (html: string): string => {
 	/* eslint-disable no-useless-escape */
-	return html.replace(/"(\/(?:[^\/].*)?)"/g, "\"/consultations$1\"");
+	return html.replace(/"(\/(?:[^\/][^"]*)?)"/g, "\"/consultations$1\"");
 	/* eslint-enable no-useless-escape */
 };
 
@@ -85,7 +85,7 @@ export const processHtml = (html: string, {
 		links,
 		scripts,
 		globals,
-	});	
+	});
 	return html;
 };
 

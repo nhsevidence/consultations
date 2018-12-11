@@ -95,6 +95,10 @@ describe("HTML processor", () => {
 			let result = replaceRelativePaths("<body><script href=\"/test\"></script><span>");
 			expect(result).toEqual("<body><script href=\"/consultations/test\"></script><span>");
 		});
+		it("prepends multiple paths on the same line", () => {
+			let result = replaceRelativePaths("<body><script href=\"/test\"></script><script href=\"/test\"></script><span>");
+			expect(result).toEqual("<body><script href=\"/consultations/test\"></script><script href=\"/consultations/test\"></script><span>");
+		});
 		it("doesn't prepend for double slash URLs", () => {
 			let result = replaceRelativePaths("<body><script href=\"//cdn.\"></script><span>");
 			expect(result).toEqual("<body><script href=\"//cdn.\"></script><span>");
