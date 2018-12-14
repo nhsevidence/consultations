@@ -18,6 +18,10 @@ import {LiveAnnouncer, LiveMessenger} from "react-aria-live";
 import { projectInformation } from "../../constants";
 import { PhaseBanner } from "../PhaseBanner/PhaseBanner";
 
+// import "../../../node_modules/@nice-digital/icons/dist/_nice-icons.scss";
+// import "../../../node_modules/@nice-digital/design-system/src/stylesheets/nice-design-system.scss";
+// import "./App.scss";
+
 type PropsType = any;
 
 type StateType = {

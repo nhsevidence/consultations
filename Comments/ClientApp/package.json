@@ -10,22 +10,17 @@
     "npm": ">=5.7.1"
   },
   "scripts": {
-    "start": "rimraf ./build && npm run modernizr && npm-run-all -p sass:watch start-js",
-    "start-js": "react-scripts start",
-    "build": "npm run modernizr && npm run sass:build && react-scripts build",
-    "test": "react-scripts test --env=node",
+    "start": "npm run modernizr && react-scripts start",
+    "build": "npm run modernizr && react-scripts build",
+
+
     "bless": "blessc ./public/styles/main.css --output ./public/styles/main-ie9.css",
-    "eslint": "node node_modules/eslint/bin/eslint 'src/'",
-    "esw": "node node_modules/eslint-watch/bin/esw 'src/' --watch",
+
+    "flow": "flow",
+    "test": "react-scripts test --env=node",
     "test:ci": "cross-env CI=true react-scripts test --env=jsdom --testResultsProcessor=jest-teamcity-reporter",
     "test:ci:coverage": "npm run test:ci -- --coverage ",
-    "eject": "react-scripts eject",
-    "flow": "flow",
-    "modernizr": "modernizr -c modernizr-config.json -d ./public/vendor/modernizr-custom.js",
-    "sass:build": "npm-run-all -s sass:compile sass:post bless",
-    "sass:compile": "node-sass-chokidar --include-path ./node_modules/@nice-digital/design-system/src/stylesheets --include-path ./node_modules/@nice-digital/icons/dist --source-map true src/main.scss -o public/styles",
-    "sass:post": "postcss public/styles/*.css --use autoprefixer -d public/styles",
-    "sass:watch": "npm run sass:build && chokidar \"./src/**/*.scss\" -c \"npm run sass:build\""
+    "modernizr": "modernizr -c modernizr-config.json -d ./public/vendor/modernizr-custom.js"
   },
   "dependencies": {
     "@babel/core": "^7.2.0",
@@ -45,6 +40,7 @@
     "lodash-deeper": "^1.1.0",
     "moment": "^2.22.1",
     "niceorg-client": "github:nhsevidence/niceorg-client#1.7.0.34-r3FF073C",
+    "node-sass": "^4.11.0",
     "object-hash": "^1.3.0",
     "query-string": "4.3.4",
     "rc-tooltip": "^3.7.2",
@@ -90,5 +86,6 @@
   "main": "index.js",
   "eslintConfig": {
     "extends": "react-app"
-  }
+  },
+  "homepage": "."
 }
