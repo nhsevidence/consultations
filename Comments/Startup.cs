@@ -10,10 +10,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using NICE.Feeds;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Comments.Auth;
 using Comments.Common;
 using Comments.Export;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +23,7 @@ using ConsultationsContext = Comments.Models.ConsultationsContext;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using NICE.Auth.NetCore.Services;
 using NSwag;
+using NSwag.AspNetCore;
 using NSwag.SwaggerGeneration.Processors.Security;
 
 namespace Comments
@@ -88,6 +91,12 @@ namespace Comments
 				.AddNICEAuth(options =>
 				{
 					// todo: Configure options here from AppSettings
+				})
+				.AddIdentityServerAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme, options =>
+				{
+					options.Authority = "http://localhost:5000";
+					options.ApiName = "consultations-api-openapiv2";
+					options.RequireHttpsMetadata = false;
 				});
 
 			services.AddMvc(options =>
@@ -145,32 +154,35 @@ namespace Comments
 			services.AddOptions();
 
 			services
-				.AddSwaggerDocument(document =>
+				.AddSwaggerDocument(configure =>
 				{
-					document.DocumentName = "openapiv2";
-					document.Title = "Consultations API";
-					document.DocumentProcessors.Add(
-						new SecurityDefinitionAppender("auth", new SwaggerSecurityScheme
+					configure.DocumentName = "openapiv2";
+					configure.Title = "Consultations API";
+
+					var oAuth2Appender = new SecurityDefinitionAppender("oauth2",
+						new SwaggerSecurityScheme
 						{
-							Type = SwaggerSecuritySchemeType.Basic,
-							Name = "Auth",
-							In = SwaggerSecurityApiKeyLocation.Header
-						})
-					);
-				})
-				.AddOpenApiDocument(document =>
-				{
-					document.DocumentName = "openapiv3";
-					document.Title = "Consultations API";
-					document.DocumentProcessors.Add(
-						new SecurityDefinitionAppender("auth", new SwaggerSecurityScheme
-						{
-							Type = SwaggerSecuritySchemeType.Basic,
-							Name = "Auth",
-							In = SwaggerSecurityApiKeyLocation.Header
-						})
-					);
+							Type = SwaggerSecuritySchemeType.OAuth2,
+							Flow = SwaggerOAuth2Flow.Implicit,
+							AuthorizationUrl = "http://localhost:5000/connect/authorize",
+							Scopes = new Dictionary<string, string> {{"consultations-api-openapiv2", "Consultations API - Full Access"}},
+						});
+					configure.DocumentProcessors.Add(oAuth2Appender);
+					configure.OperationProcessors.Add(new OperationSecurityScopeProcessor("oauth2"));
 				});
+//				.AddOpenApiDocument(document =>
+//				{
+//					document.DocumentName = "openapiv3";
+//					document.Title = "Consultations API";
+//					document.DocumentProcessors.Add(
+//						new SecurityDefinitionAppender("auth", new SwaggerSecurityScheme
+//						{
+//							Type = SwaggerSecuritySchemeType.Basic,
+//							Name = "Auth",
+//							In = SwaggerSecurityApiKeyLocation.Header
+//						})
+//					);
+//				});
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -318,39 +330,65 @@ namespace Comments
 				});
 
 			// OpenAPI 2.0
-			app.UseSwagger(options =>
+			app.UseSwagger(configure =>
 			{
-				options.DocumentName = "openapiv2";
-				options.Path = "/openapiv2/v1/comments-api.json";
+				configure.DocumentName = "openapiv2";
+				configure.Path = "/openapiv2/v1/consultations-api.json";
 			});
-			app.UseSwaggerUi3(options =>
+			app.UseSwaggerUi3(configure =>
 			{
-				options.Path = "/openapiv2";
-				options.DocumentPath = "/openapiv2/v1/comments-api.json";
-			});
-			app.UseReDoc(options =>
-			{
-				options.Path = "/openapiv2_redoc";
-				options.DocumentPath = "/openapiv2/v1/comments-api.json";
+				configure.Path = "/openapiv2";
+				configure.DocumentPath = "/openapiv2/v1/consultations-api.json";
+
+				configure.OAuth2Client = new OAuth2ClientSettings
+				{
+					ClientId = "consultations-api-openapiv2",
+					AppName = "Consultations API - Open API V2"
+				};
 			});
 
-			// OpenAPI 3.0
-			app.UseSwagger(options =>
+			app.UseReDoc(configure =>
 			{
-				options.DocumentName = "openapiv3";
-				options.Path = "/openapiv3/v1/comments-api.json";
+				configure.Path = "/openapiv2_redoc";
+				configure.DocumentPath = "/openapiv2/v1/consultations-api.json";
 			});
-
-			app.UseSwaggerUi3(options =>
-			{
-				options.Path = "/openapiv3";
-				options.DocumentPath = "/openapiv3/v1/comments-api.json";
-			});
-			app.UseReDoc(options =>
-			{
-				options.Path = "/openapiv3_redoc";
-				options.DocumentPath = "/openapiv3/v1/comments-api.json";
-			});
+//
+//			// OpenAPI 3.0
+//			app.UseSwagger(options =>
+//			{
+//				options.DocumentName = "openapiv3";
+//				options.Path = "/openapiv3/v1/consultations-api.json";
+//			});
+//
+//			app.UseSwaggerUi3(options =>
+//			{
+//				options.Path = "/openapiv3";
+//				options.DocumentPath = "/openapiv3/v1/consultations-api.json";
+//
+//				options.GeneratorSettings.DefaultPropertyNameHandling = PropertyNameHandling.CamelCase;
+//				//options.SwaggerUiRoute = "";
+//
+//				options.GeneratorSettings.DocumentProcessors.Add(new SecurityDefinitionAppender("oauth2", new SwaggerSecurityScheme
+//				{
+//					Type = SwaggerSecuritySchemeType.OAuth2,
+//					Flow = SwaggerOAuth2Flow.Implicit,
+//					AuthorizationUrl = "http://localhost:5000/connect/authorize",
+//					Scopes = new Dictionary<string, string> {{"consultations-api-rw", "Consultations API RW"}}
+//				}));
+//
+//				options.GeneratorSettings.OperationProcessors.Add(new OperationSecurityScopeProcessor("oauth2"));
+//
+//				options.OAuth2Client = new OAuth2ClientSettings
+//				{
+//					ClientId = "consultations-api-v3",
+//					AppName = "Consultations API"
+//				};
+//			});
+//			app.UseReDoc(options =>
+//			{
+//				options.Path = "/openapiv3_redoc";
+//				options.DocumentPath = "/openapiv3/v1/consultations-api.json";
+//			});
 
 		}
 	}

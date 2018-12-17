@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Comments.Controllers.Api
 {
+	[Authorize(AuthenticationSchemes = "NICEAccounts")]
+	[Authorize(AuthenticationSchemes = "Bearer")]
     [Produces("application/json")]
     [Route("consultations/api/[controller]")]
     public class ConsultationController : Controller

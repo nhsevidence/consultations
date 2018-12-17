@@ -1,9 +1,12 @@
 using Comments.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Comments.Controllers.Api
 {
+	[Authorize(AuthenticationSchemes = "NICEAccounts")]
+	[Authorize(AuthenticationSchemes = "Bearer")]
     [Produces("application/json")]
     [Route("consultations/api/[controller]")]
     public class QuestionController : ControllerBase
@@ -16,7 +19,7 @@ namespace Comments.Controllers.Api
             _logger = logger;
         }
 
-        // GET: consultations/api/Question/5 
+        // GET: consultations/api/Question/5
         [HttpGet("{questionId}")]
         public IActionResult GetQuestion([FromRoute] int questionId)
         {
