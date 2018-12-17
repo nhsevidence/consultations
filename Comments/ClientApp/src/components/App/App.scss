@@ -1,10 +1,12 @@
-@import "../../../node_modules/@nice-digital/design-system/src/stylesheets/nice-design-system.scss";
+@import 'nice-design-system';
+
+// @import "../../../node_modules/@nice-digital/design-system/src/stylesheets/nice-design-system.scss";
 // @import "nice-icons";
 
 // Any styling that's in here should probably be promoted to the design system
 
 [data-g] {
-  position: static;
+  // position: static;
 }
 
 .grid {

@@ -19,6 +19,8 @@ import { pullFocusByQuerySelector } from "../../helpers/accessibility-helpers";
 import { Header } from "../Header/Header";
 import { Tutorial } from "../Tutorial/Tutorial";
 
+import "./Document.scss";
+
 type PropsType = {
 	staticContext: {
 		preload: any,

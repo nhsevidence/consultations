@@ -1,3 +1,6 @@
+@import "nice-design-system";
+@import "../App/App.scss";
+
 .document-comment-container {
   &:focus {
     outline: none;

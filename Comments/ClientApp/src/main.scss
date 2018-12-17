@@ -1,8 +1,5 @@
-// Node imports
 $nice-font-base-path: "/consultations/fonts/";
-
 @import "nice-design-system";
-@import "nice-icons";
 
  // Design System Overrides
 @import "./components/StackedNav/StackedNav";
@@ -16,7 +13,8 @@ $nice-font-base-path: "/consultations/fonts/";
 @import "styles/non-design-system";
 
 // Component folder structure imports here
-@import "./components/Document/Document";
+// @import "./components/App/App";
+// @import "./components/Document/Document";
 @import "./components/CommentList/Drawer";
 @import "./components/CommentList/CommentList";
 @import "./components/CommentBox/CommentBox";
