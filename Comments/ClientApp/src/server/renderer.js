@@ -27,8 +27,8 @@ const getPreloadedDataHtml = (data): string => {
 	return scriptTag;
 };
 
-const getGlobalsDataHtml = (data): string => {
-	let scriptTag: string = `<script>window.globals=${JSON.stringify(data)};</script>`;
+const getAnalyticsGlobalsData = (data): string => {
+	let scriptTag: string = `<script>window.analyticsGlobals=${JSON.stringify(data)};</script>`;
 
 	// Wrap new lines in dev mode so it's easier to scan over html source for debugging purposes
 	if (process.env.NODE_ENV === "development") {
@@ -64,7 +64,7 @@ export const serverRenderer = (params): Promise => {
 				}, // Key value pairs of preloaded data sets
 				loaders: [], // List of promises where we track preloading data
 			},
-			globals: {},
+			analyticsGlobals: {},
 			baseUrl: params.origin + BaseUrlRelative,
 			// Base url is used for 'server' ajax requests so we can hit the .NET instance from the Node process
 		};
@@ -104,7 +104,7 @@ export const serverRenderer = (params): Promise => {
 					title: helmet.title.toString(),
 					metas: helmet.meta.toString(),
 					links: helmet.link.toString(),
-					globals: getGlobalsDataHtml(staticContext.globals),
+					analyticsGlobals: getAnalyticsGlobalsData(staticContext.analyticsGlobals),
 					scripts: getPreloadedDataHtml(staticContext.preload.data) + helmet.script.toString(),
 					accountsEnvironment: params.data.accountsEnvironment,
 				});

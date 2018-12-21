@@ -29,8 +29,8 @@ describe("HTML processor", () => {
 			expect(result).toBe("test1 ABC test2");
 		});
 
-		it("replaces <!--! globals --> placeholder in HTML", () => {
-			let result = prepTags("test1 <!--! globals --> test2", { globals: "ABC" });
+		it("replaces <!--! analyticsGlobals --> placeholder in HTML", () => {
+			let result = prepTags("test1 <!--! analyticsGlobals --> test2", { analyticsGlobals: "ABC" });
 			expect(result).toBe("test1 ABC test2");
 		});
 	});

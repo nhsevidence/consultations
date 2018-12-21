@@ -14,7 +14,8 @@ namespace Comments.Services
         User GetCurrentUser();
 		SignInDetails GetCurrentUserSignInDetails(string returnURL);
 	    string GetDisplayNameForUserId(Guid userId);
-	    IDictionary<Guid, string> GetDisplayNamesForMultipleUserIds(IEnumerable<Guid> userIds);
+	    string GetEmailForUserId(Guid userId);
+		IDictionary<Guid, string> GetDisplayNamesForMultipleUserIds(IEnumerable<Guid> userIds);
 	    ICollection<string> GetUserRoles();
 	    Validate IsAllowedAccess(ICollection<string> permittedRoles);
 	}
@@ -52,7 +53,12 @@ namespace Comments.Services
 		    return _authenticateService.FindUser(userId)?.DisplayName;
 	    }
 
-	    public IDictionary<Guid, string> GetDisplayNamesForMultipleUserIds(IEnumerable<Guid> userIds)
+	    public string GetEmailForUserId(Guid userId)
+	    {
+		    return _authenticateService.FindUser(userId)?.EmailAddress;
+	    }
+
+		public IDictionary<Guid, string> GetDisplayNamesForMultipleUserIds(IEnumerable<Guid> userIds)
 	    {
 		    return userIds.Distinct().ToDictionary(userId => userId, GetDisplayNameForUserId);
 	    }

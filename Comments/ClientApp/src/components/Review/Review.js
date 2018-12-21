@@ -114,9 +114,10 @@ export class Review extends Component<PropsType, StateType> {
 
 		if (preloadedCommentsData && preloadedConsultationData) {
 			if (this.props.staticContext) {
-				this.props.staticContext.globals.gidReference = preloadedConsultationData.reference;
-				this.props.staticContext.globals.consultationId = preloadedConsultationData.consultationId;
-				this.props.staticContext.globals.stage = preloadedConsultationData.consultationState.userHasSubmitted ? "postsubmission" : "presubmission";
+				this.props.staticContext.analyticsGlobals.gidReference = preloadedConsultationData.reference;
+				this.props.staticContext.analyticsGlobals.consultationId = preloadedConsultationData.consultationId;
+				this.props.staticContext.analyticsGlobals.consultationTitle = preloadedConsultationData.title
+				this.props.staticContext.analyticsGlobals.stage = preloadedConsultationData.consultationState.userHasSubmitted ? "postsubmission" : "presubmission";
 			}
 			this.state = {
 				path: this.props.basename + this.props.location.pathname,
@@ -244,7 +245,7 @@ export class Review extends Component<PropsType, StateType> {
 					tagManager({
 						event: "pageview",
 						gidReference: this.state.consultationData.reference,
-						title: this.getPageTitle(),
+						title: this.getPageTitle(true),
 						stage: this.state.consultationData.consultationState.userHasSubmitted ? "postsubmission" : "presubmission",
 					});
 				}
@@ -303,14 +304,12 @@ export class Review extends Component<PropsType, StateType> {
 					action: "Response submitted",
 					label: `${response.data.comments ? response.data.comments.length : "0"} comments, ${response.data.answers ? response.data.answers.length : "0"} answers`,
 				});
-
 				tagManager({
 					event: "generic",
 					category: "Consultation comments page",
 					action: "Length to submit response",
 					label: "Duration in minutes",
-					value: (Math.round(response.data.durationBetweenFirstCommentOrAnswerSavedAndSubmissionInSeconds / 60)), // number of mins, rounded. will be 0 if less than 30 mins
-					//:-( no more whole numbers. lengthy decimals from now on  - though they're much more likely to get trimmed and lose accuracy
+					value: (Math.round(response.data.durationBetweenFirstCommentOrAnswerSavedAndSubmissionInSeconds / 60)),
 				});
 				tagManager({
 					event: "generic",
@@ -424,7 +423,8 @@ export class Review extends Component<PropsType, StateType> {
 			.reduce((arr, group) => arr.concat(group), []);
 	}
 
-	getPageTitle = () => {
+	getPageTitle = (isForAnalytics: boolean = false) => {
+		if (isForAnalytics) return this.state.consultationData.title;
 		return `${this.state.consultationData.title} | Review your response`;
 	};
 

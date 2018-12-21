@@ -28,7 +28,7 @@ export class Selection extends Component<PropsType, StateType> {
 		};
 		this.selectionContainer = React.createRef();		
 	}
-
+	
 	getXPathForElement(element) {
 		const idx = (sib, name) => sib 
 			? idx(sib.previousElementSibling, name||sib.localName) + (sib.localName == name) // eslint-disable-line
@@ -55,20 +55,16 @@ export class Selection extends Component<PropsType, StateType> {
 				placeholder: "Comment on this selected text",
 				commentText: "",
 				commentOn: "Selection",
-				order: getElementPositionWithinDocument(selectionRange.startContainer.parentElement) + "." + selectionRange.startOffset.toString(),
-				section: getSectionTitle(selectionRange.startContainer.parentElement),
+				order: getElementPositionWithinDocument(selectionRange.commonAncestorContainer.parentNode) + "." + selectionRange.startOffset.toString(),
+				section: getSectionTitle(selectionRange.commonAncestorContainer.parentNode),
 			};
 		} catch (error) {
-			console.error(error);
+			console.error("getCommentForRange", error);
 		}
-
-		//console.log(`comment in selection: ${stringifyObject(comment)}`);
-
 		return(comment);
 	}
 
 	onMouseUp = (event: Event) => {
-
 		if (window && window.getSelection) {
 			const arrowSize = 10; //this must match the size in $arrow-size in Selection.scss
 			const selection = window.getSelection();
@@ -80,22 +76,21 @@ export class Selection extends Component<PropsType, StateType> {
 			if (comment === null) {
 				this.setState({ toolTipVisible: false });
 			}
-
 			const scrollTop = "pageYOffset" in window ? window.pageYOffset : document.documentElement.scrollTop;
 			const scrollLeft = "pageXOffset" in window ? window.pageXOffset : document.documentElement.scrollLeft;
 			const boundingRectOfContainer = this.selectionContainer.current.getBoundingClientRect();
 			const position =
 			{
 				x: event.pageX - (boundingRectOfContainer.left + scrollLeft) - arrowSize,
-				y: event.pageY - (boundingRectOfContainer.top + scrollTop) + arrowSize		  
+				y: event.pageY - (boundingRectOfContainer.top + scrollTop) + arrowSize,		  
 			};
-
 			this.setState({ comment, position, toolTipVisible: true });
 		} else{
 			this.setState({ toolTipVisible: false });
 		}
 	}
-	onButtonClick = (event: Event ) => {
+	
+	onButtonClick = () => {
 		this.props.newCommentFunc(null, this.state.comment); //can't pass the event here, as it's the button click event, not the start of the text selection.
 		this.setState({ toolTipVisible: false });
 		tagManager({
@@ -106,10 +101,9 @@ export class Selection extends Component<PropsType, StateType> {
 		});
 	}
 
-
 	onVisibleChange = (toolTipVisible) => {
 		this.setState({
-			toolTipVisible
+			toolTipVisible,
 		});
 	}
 
@@ -120,7 +114,7 @@ export class Selection extends Component<PropsType, StateType> {
 		if (typeof String.prototype.trim === "function") {
 			return String.prototype.trim.call(s);
 		} else {
-			return s.replace(/^[\s\xA0]+|[\s\xA0]+$/g, '');
+			return s.replace(/^[\s\xA0]+|[\s\xA0]+$/g, "");
 		}
 	}
 
@@ -150,7 +144,7 @@ export const MyToolTip = (props = ToolTipPropsType) => {
 	var contentMenuStyle = {
 		display: visible ? "block" : "none",
 		left: position.x,
-		top: position.y
+		top: position.y,
 	};
 	return (
 		<div className="selection-container unselectable" style={contentMenuStyle}>

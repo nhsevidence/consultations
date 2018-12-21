@@ -18,6 +18,7 @@ namespace Comments.Services
 
 		(IEnumerable<Models.Comment> comment, IEnumerable<Models.Answer> answer, IEnumerable<Models.Question> question, Validate valid) GetAllDataForConsulationForCurrentUser(int consultationId);
 		(string ConsultationName, string DocumentName, string ChapterName) GetLocationData(Comments.Models.Location location);
+		string GetConsultationName(Location location);
 	}
 
     public class ExportService : IExportService
@@ -96,6 +97,15 @@ namespace Comments.Services
 			    chapterDetail = documentDetail?.Chapters.First(c => c.Slug == URIElements.ChapterSlug);
 
 		    return (consultationDetails.ConsultationName, documentDetail?.Title, chapterDetail?.Slug);
+	    }
+
+	    public string GetConsultationName(Location location)
+	    {
+		    var sourceURI = location.SourceURI;
+		    ConsultationsUriElements URIElements = ConsultationsUri.ParseConsultationsUri(sourceURI);
+
+		    var consultationDetails = _consultationService.GetConsultation(URIElements.ConsultationId, false);
+		    return consultationDetails.ConsultationName;
 	    }
 	}
 }

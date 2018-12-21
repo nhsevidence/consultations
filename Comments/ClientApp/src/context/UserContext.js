@@ -31,7 +31,7 @@ export class UserProvider extends React.Component<PropsType, StateType> {
 			registerURL: "",
 		};
 
-		const isServerSideRender = (this.props.staticContext && this.props.staticContext.preload);		
+		const isServerSideRender = (this.props.staticContext && this.props.staticContext.preload);
 		const preloadSource = isServerSideRender ? this.props.staticContext.preload.data : window.__PRELOADED__; // TODO: extract this preloaded line out to (or near) the preload endpoint method.
 
 		if (preloadSource){
@@ -42,9 +42,9 @@ export class UserProvider extends React.Component<PropsType, StateType> {
 				registerURL: preloadSource.registerURL,
 			};
 			if (this.props.staticContext) {
-				this.props.staticContext.globals.isSignedIn = preloadSource.isAuthorised;
+				this.props.staticContext.analyticsGlobals.isSignedIn = preloadSource.isAuthorised;
 			}
-		} 
+		}
 	}
 
 	loadUser = (returnURL) => {

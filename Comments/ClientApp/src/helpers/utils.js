@@ -139,8 +139,8 @@ export const getSectionTitle = (elem) => {
 		if (elem.id === "root"){ //it won't look higher than root.
 			return null;
 		}
-	} while (elem = elem.parentElement); // eslint-disable-line
-	return null; //shouldn't really ever be called, as root will get hit if there's no matches.
+	} while (elem = elem.parentNode); // eslint-disable-line
+	return null; //shouldn't really ever be called, as root will get hit if there's no matches. 
 };
 
 export const removeQuerystring = (url) => {

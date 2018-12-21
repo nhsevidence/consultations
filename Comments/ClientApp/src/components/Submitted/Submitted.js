@@ -57,7 +57,9 @@ export class Submitted extends Component<PropsType, StateType> {
 
 			if (preloadedConsultation) {
 				if (this.props.staticContext) {
-					this.props.staticContext.globals.gidReference = preloadedConsultation.reference;
+					this.props.staticContext.analyticsGlobals.gidReference = preloadedConsultation.reference;
+					this.props.staticContext.analyticsGlobals.consultationTitle = preloadedConsultation.title;
+					this.props.staticContext.analyticsGlobals.stage = "submit";
 				}
 				this.state = {
 					consultationData: preloadedConsultation,
@@ -101,7 +103,7 @@ export class Submitted extends Component<PropsType, StateType> {
 						tagManager({
 							event: "pageview",
 							gidReference: this.state.consultationData.reference,
-							title: this.getPageTitle(),
+							title: this.getPageTitle(true),
 							stage: "submit",
 						});
 					});
@@ -117,7 +119,8 @@ export class Submitted extends Component<PropsType, StateType> {
 		}
 	}
 
-	getPageTitle = () => {
+	getPageTitle = (isForAnalytics: boolean = false) => {
+		if (isForAnalytics) return this.state.consultationData.title;
 		return `${this.state.consultationData.title} | Response submitted`;
 	};
 

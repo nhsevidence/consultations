@@ -9,13 +9,13 @@ const OpeningHtmlTagRegex: RegExp = /<html[^>]*>/g,
 
 // Replace placeholders and tokens in the static html layout file.
 
-export const prepTags = (html: string, { title, metas, links, scripts, globals }): string => {
+export const prepTags = (html: string, { title, metas, links, scripts, analyticsGlobals }): string => {
 	return html
 		.replace("<!--! title -->", title)
 		.replace("<!--! metas -->", metas)
 		.replace("<!--! links -->", links)
 		.replace("<!--! scripts -->", scripts)
-		.replace("<!--! globals -->", globals);
+		.replace("<!--! analyticsGlobals -->", analyticsGlobals);
 };
 
 // Removes the class attribute from the given html attributes.
@@ -69,7 +69,7 @@ export const replaceAccountsEnvironment = (html: string, accountsEnvironment: st
 };
 
 export const processHtml = (html: string, {
-	title, metas, links, globals, scripts, htmlAttributes, bodyAttributes, rootContent, accountsEnvironment
+	title, metas, links, analyticsGlobals, scripts, htmlAttributes, bodyAttributes, rootContent, accountsEnvironment
 }): string => {
 	// In dev mode we proxy requests to react dev server, which runs in the root. So we prepend relative URLs.
 	// We don't need to do this in production because we use PUBLIC_URL=/consultations with `npm run build`.
@@ -84,8 +84,8 @@ export const processHtml = (html: string, {
 		metas,
 		links,
 		scripts,
-		globals,
-	});	
+		analyticsGlobals,
+	});
 	return html;
 };
 

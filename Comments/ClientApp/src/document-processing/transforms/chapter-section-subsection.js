@@ -7,7 +7,7 @@ import {tagManager} from "../../helpers/tag-manager";
 export const processChapterSectionSubsection = (node, onNewCommentClick, sourceURI, allowComments) => {
 
 	let commentOn = node.attribs["data-heading-type"].toLowerCase();
-	let quote = node.children.filter(nodeIsTypeText)[0].data;
+	let quote =  node.children.filter(nodeIsTypeText)[0].data;
 
 	if (nodeIsSubsection(node)) {
 		quote = node.children.filter(nodeIsSpanTag)[0].children.filter(nodeIsTypeText)[0].data;
