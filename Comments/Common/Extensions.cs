@@ -102,5 +102,12 @@ namespace Comments.Common
 	    {
 		    return hostingEnvironment.ContentRootPath.IndexOf(".Test", StringComparison.OrdinalIgnoreCase) != -1;
 	    }
+
+		public enum QuestionFilter
+		{
+			All = 0,
+			NotDeleted = 1,
+			Deleted = 2
+		}
 	}
 }

@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using Comments.Common;
+using GraphQL;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Comments.Models
@@ -69,7 +71,7 @@ namespace Comments.Models
 					.ThenInclude(s => s.Submission)
 
 				.Include(l => l.Comment)
-					.ThenInclude(s => s.Status)	
+					.ThenInclude(s => s.Status)
 
 				.Include(l => l.Question)
 					.ThenInclude(q => q.QuestionType)
@@ -107,7 +109,7 @@ namespace Comments.Models
 				//.ThenInclude(a => a.Answer)
 				//	.ThenInclude(q => q.Question)
 				//		.ThenInclude(l => l.Location)
-						
+
 				.IgnoreQueryFilters()
 				.Select(s => s.SubmissionId).Distinct().Count();
 
@@ -218,6 +220,50 @@ namespace Comments.Models
                 .FirstOrDefault();
         }
 
+        public List<Question> GetQuestions(
+	        Extensions.QuestionFilter filter = Extensions.QuestionFilter.All,
+	        int consultationId = -1,
+	        int documentId = -1)
+        {
+	        var consultationOrder = consultationId.Equals(-1) ? "" : $"{consultationId:D3}";
+	        var documentOrder = documentId.Equals(-1) ? "" : $".{documentId:D3}";
+
+	        switch (filter)
+	        {
+		        case Extensions.QuestionFilter.All:
+		        {
+			        return Question.Where(q => q.Location.Order.StartsWith($"{consultationOrder}{documentOrder}"))
+				        .Include(q => q.Location)
+				        .Include(q => q.QuestionType)
+				        .IgnoreQueryFilters()
+				        .ToList();
+		        }
+		        case Extensions.QuestionFilter.NotDeleted:
+		        {
+			        return Question.Where(q => q.Location.Order.StartsWith($"{consultationOrder}{documentOrder}"))
+				        .Where(q => q.IsDeleted.Equals(false))
+				        .Include(q => q.Location)
+				        .Include(q => q.QuestionType)
+				        .IgnoreQueryFilters()
+				        .ToList();
+		        }
+		        case Extensions.QuestionFilter.Deleted:
+		        {
+			        return Question.Where(q => q.Location.Order.StartsWith($"{consultationOrder}{documentOrder}"))
+				        .Where(q => q.IsDeleted.Equals(true))
+				        .Include(q => q.Location)
+				        .Include(q => q.QuestionType)
+				        .IgnoreQueryFilters()
+				        .ToList();
+		        }
+		        default:
+			        return Question
+				        .Include(q => q.Location)
+				        .Include(q => q.QuestionType)
+				        .ToList();
+	        }
+        }
+
 	    public Status GetStatus(StatusName statusName)
 	    {
 		    return Status
@@ -311,12 +357,12 @@ namespace Comments.Models
 
 			var submissions = Submission.Where(s => s.SubmissionByUserId.Equals(usersSubmissionsToDelete))
 			    .Include(s => s.SubmissionComment)
-					.ThenInclude(sc => sc.Comment) 
+					.ThenInclude(sc => sc.Comment)
 				.Include(s => s.SubmissionAnswer)
 					.ThenInclude(sa => sa.Answer)
 				.IgnoreQueryFilters() //without this you'd only be able to delete your own data..
 				.ToList();
-			
+
 		    var submissionCommentsToDelete = new List<SubmissionComment>();
 		    var submissionAnswersToDelete = new List<SubmissionAnswer>();
 		    foreach (var submission in submissions)
@@ -371,7 +417,7 @@ namespace Comments.Models
 				FROM QuestionType
 				WHERE [Description] = @questionTextDescription
 
-				IF @questionTypeID IS NULL 
+				IF @questionTypeID IS NULL
 				BEGIN
 					INSERT INTO QuestionType ([Description], HasBooleanAnswer, HasTextAnswer)
 					VALUES (@questionTextDescription, 0, 1)
@@ -412,8 +458,8 @@ namespace Comments.Models
 
 
 					INSERT INTO Question (LocationID, QuestionText, QuestionTypeID, CreatedByUserID, LastModifiedByUserID, LastModifiedDate)
-					VALUES (@locationID3, 'Would implementation of any of the draft recommendations have cost implications?', @questionTypeID, @userID, @userID, GETDATE())			
-		
+					VALUES (@locationID3, 'Would implementation of any of the draft recommendations have cost implications?', @questionTypeID, @userID, @userID, GETDATE())
+
 				END
 			", new SqlParameter("@consultationId", consultationId));
 	    }
@@ -449,7 +495,7 @@ namespace Comments.Models
 				FROM QuestionType
 				WHERE [Description] = @questionTextDescription
 
-				IF @questionTypeID IS NULL 
+				IF @questionTypeID IS NULL
 				BEGIN
 					INSERT INTO QuestionType ([Description], HasBooleanAnswer, HasTextAnswer)
 					VALUES (@questionTextDescription, 0, 1)
@@ -488,8 +534,8 @@ namespace Comments.Models
 					VALUES (@locationID2, 'Are the summaries of clinical and cost effectiveness reasonable interpretations of the evidence?', @questionTypeID, @userID, @userID, GETDATE())
 
 					INSERT INTO Question (LocationID, QuestionText, QuestionTypeID, CreatedByUserID, LastModifiedByUserID, LastModifiedDate)
-					VALUES (@locationID3, 'Are the recommendations sound and a suitable basis for guidance to the NHS?', @questionTypeID, @userID, @userID, GETDATE())			
-		
+					VALUES (@locationID3, 'Are the recommendations sound and a suitable basis for guidance to the NHS?', @questionTypeID, @userID, @userID, GETDATE())
+
 				END
 
 			", new SqlParameter("@consultationId", consultationId));
@@ -589,7 +635,7 @@ namespace Comments.Models
 				FROM QuestionType
 				WHERE [Description] = @questionTextDescription
 
-				IF @questionTypeID IS NULL 
+				IF @questionTypeID IS NULL
 				BEGIN
 					INSERT INTO QuestionType ([Description], HasBooleanAnswer, HasTextAnswer)
 					VALUES (@questionTextDescription, 0, 1)
@@ -628,8 +674,8 @@ namespace Comments.Models
 					VALUES (@locationID2, 'Do you have any comments on areas excluded from the scope of the guideline?', @questionTypeID, @userID, @userID, GETDATE())
 
 					INSERT INTO Question (LocationID, QuestionText, QuestionTypeID, CreatedByUserID, LastModifiedByUserID, LastModifiedDate)
-					VALUES (@locationID3, 'Do you have any comments on equalities issues?', @questionTypeID, @userID, @userID, GETDATE())			
-		
+					VALUES (@locationID3, 'Do you have any comments on equalities issues?', @questionTypeID, @userID, @userID, GETDATE())
+
 				END
 
 			", new SqlParameter("@consultationId", consultationId));
@@ -666,7 +712,7 @@ namespace Comments.Models
 				FROM QuestionType
 				WHERE [Description] = @questionTextDescription
 
-				IF @questionTypeID IS NULL 
+				IF @questionTypeID IS NULL
 				BEGIN
 					INSERT INTO QuestionType ([Description], HasBooleanAnswer, HasTextAnswer)
 					VALUES (@questionTextDescription, 0, 1)
@@ -705,8 +751,8 @@ namespace Comments.Models
 					VALUES (@locationID2, 'Are local systems and structures in place to collect data for the proposed quality measures? If not, how feasible would it be for these to be put in place?', @questionTypeID, @userID, @userID, GETDATE())
 
 					INSERT INTO Question (LocationID, QuestionText, QuestionTypeID, CreatedByUserID, LastModifiedByUserID, LastModifiedDate)
-					VALUES (@locationID3, 'Do you think each of the statements in this draft quality standard would be achievable by local services given the net resources needed to deliver them? Please describe any resource requirements that you think would be necessary for any statement. Please describe any potential cost savings or opportunities for disinvestment', @questionTypeID, @userID, @userID, GETDATE())			
-		
+					VALUES (@locationID3, 'Do you think each of the statements in this draft quality standard would be achievable by local services given the net resources needed to deliver them? Please describe any resource requirements that you think would be necessary for any statement. Please describe any potential cost savings or opportunities for disinvestment', @questionTypeID, @userID, @userID, GETDATE())
+
 				END
 
 			", new SqlParameter("@consultationId", consultationId));

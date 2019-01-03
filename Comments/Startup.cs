@@ -15,6 +15,12 @@ using System.IO;
 using Comments.Auth;
 using Comments.Common;
 using Comments.Export;
+using Comments.Models;
+using GraphiQl;
+using GraphQL;
+using GraphQL.Server.Ui.Playground;
+using GraphQL.Server.Ui.Voyager;
+using GraphQL.Types;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -81,6 +87,15 @@ namespace Comments
 			services.TryAddTransient<IExportToExcel, ExportToExcel>();
 			services.TryAddTransient<IStatusService, StatusService>();
 			services.TryAddTransient<IConsultationListService, ConsultationListService>();
+
+			services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+			services.AddSingleton<ConsultationsGraphQLQuery>();
+			services.AddSingleton<GraphQLQuestionType>();
+			services.AddSingleton<GraphQLQuestionFilterType>();
+			services.AddSingleton<GraphQLConsultationType>();
+			services.AddSingleton<GraphQLDocumentType>();
+			var sp = services.BuildServiceProvider();
+			services.AddSingleton<ISchema>(new ConsultationsGraphQLSchema(new FuncDependencyResolver(type => sp.GetService(type))));
 
 			// Add authentication
 			services.AddAuthentication(options =>
@@ -218,7 +233,7 @@ namespace Comments
 				app.Use((context, next) =>
 				{
 					var reqPath = context.Request.Path;
-					if (reqPath.HasValue && reqPath.Value.Contains(".") && !reqPath.Value.Contains("openapi"))
+					if (reqPath.HasValue && reqPath.Value.Contains(".") && !reqPath.Value.Contains("api"))
 					{
 						// Map static files paths to the root, for use within the
 						if (reqPath.Value.Contains("/consultations"))
@@ -247,7 +262,12 @@ namespace Comments
 				app.UseHttpsRedirection();
 			}
 
+			//app.UseGraphiQl("/api/graphql");
 
+			app.UseGraphQLPlayground(new GraphQLPlaygroundOptions
+				{Path = "/api/graphql-playground", GraphQLEndPoint = "/api/graphql"});
+			app.UseGraphQLVoyager(new GraphQLVoyagerOptions
+				{Path = "/api/graphql-voyager", GraphQLEndPoint = "/api/graphql"});
 			app.UseMvc(routes =>
 			{
 				routes.MapRoute(
@@ -271,7 +291,7 @@ namespace Comments
 					defaults: new {controller = "Redirect", action = "PreviewDocumentWithoutChapter"});
 			});
 
-			app.MapWhen(x => !x.Request.Path.Value.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase), builder =>
+			app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase), builder =>
 				{
 					builder.Use((context, next) =>
 					{
@@ -333,12 +353,12 @@ namespace Comments
 			app.UseSwagger(configure =>
 			{
 				configure.DocumentName = "openapiv2";
-				configure.Path = "/openapiv2/v1/consultations-api.json";
+				configure.Path = "/api/openapiv2/v1/consultations-api.json";
 			});
 			app.UseSwaggerUi3(configure =>
 			{
-				configure.Path = "/openapiv2";
-				configure.DocumentPath = "/openapiv2/v1/consultations-api.json";
+				configure.Path = "/api/openapiv2";
+				configure.DocumentPath = "/api/openapiv2/v1/consultations-api.json";
 
 				configure.OAuth2Client = new OAuth2ClientSettings
 				{
@@ -349,8 +369,8 @@ namespace Comments
 
 			app.UseReDoc(configure =>
 			{
-				configure.Path = "/openapiv2_redoc";
-				configure.DocumentPath = "/openapiv2/v1/consultations-api.json";
+				configure.Path = "/api/openapiv2_redoc";
+				configure.DocumentPath = "/api/openapiv2/v1/consultations-api.json";
 			});
 //
 //			// OpenAPI 3.0
@@ -389,7 +409,6 @@ namespace Comments
 //				options.Path = "/openapiv3_redoc";
 //				options.DocumentPath = "/openapiv3/v1/consultations-api.json";
 //			});
-
 		}
 	}
 }
