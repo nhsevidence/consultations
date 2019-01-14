@@ -18,6 +18,7 @@ import { Selection } from "../Selection/Selection";
 import { pullFocusByQuerySelector } from "../../helpers/accessibility-helpers";
 import { Header } from "../Header/Header";
 import { Tutorial } from "../Tutorial/Tutorial";
+import { GuidanceAdvice } from "../GuidanceAdvice/GuidanceAdvice";
 
 type PropsType = {
 	staticContext: {
@@ -428,6 +429,7 @@ export class Document extends Component<PropsType, StateType> {
 				<Helmet>
 					<title>{this.getPageTitle()}</title>
 				</Helmet>
+				<GuidanceAdvice/>
 				<UserContext.Consumer>
 					{(contextValue: any) => !contextValue.isAuthorised ?
 						<LoginBanner signInButton={false}
@@ -544,6 +546,10 @@ export class Document extends Component<PropsType, StateType> {
 
 									{/* document column */}
 									<div data-g="12 md:6 md:pull:3" className="documentColumn">
+										<p className="GuidanceAdvice__Statement mt--0" style={{background: "white", padding: "0.5rem"}}>
+											<span style={{color: "red"}} className="icon icon--warning" aria-hidden="true"/> The content on this page is not
+											current guidance and is only available for the purposes of the consultation process.
+										</p>
 										<div
 											className={`document-comment-container ${
 												this.state.loading ? "loading" : ""}`}>
