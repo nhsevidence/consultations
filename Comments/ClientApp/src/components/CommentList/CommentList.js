@@ -23,6 +23,7 @@ import { CommentBox } from "../CommentBox/CommentBox";
 import { Question } from "../Question/Question";
 import { LoginBanner } from "../LoginBanner/LoginBanner";
 import { UserContext } from "../../context/UserContext";
+import { highlightComment } from "../Selection/Selection";
 
 type PropsType = {
 	staticContext?: any,
@@ -117,9 +118,18 @@ export class CommentList extends Component<PropsType, StateType> {
 					shouldShowDrawer: response.data.consultationState.shouldShowDrawer,
 					shouldShowCommentsTab: response.data.consultationState.shouldShowCommentsTab,
 					shouldShowQuestionsTab: response.data.consultationState.shouldShowQuestionsTab,
-				});
+				}, this.highlightSelections);
 			})
 			.catch(err => console.log("load comments in commentlist " + err));
+	}
+
+	highlightSelections = () => {
+		const selectionComments = this.state.comments.filter(comment => comment.commentOn === "Selection");
+		if (selectionComments.length){
+			for (let comment in selectionComments){
+				highlightComment(selectionComments[comment]);
+			}
+		}
 	}
 
 	componentDidMount() {

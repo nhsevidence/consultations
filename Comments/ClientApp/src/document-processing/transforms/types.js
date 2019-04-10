@@ -25,3 +25,8 @@ export function nodeIsSpanTag(node) {
 export function nodeIsComment(node) {
 	return node.type === "comment";
 }
+
+export function nodeHasASelectionComment(node){
+	//console.log('nodeHasASelectionComment hit');
+	return true;
+}

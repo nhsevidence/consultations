@@ -38,7 +38,7 @@ export class Selection extends Component<PropsType, StateType> {
 				? [`id("${elm.id}")`]
 				: [...segs(elm.parentNode), `${elm.localName.toLowerCase()}[${idx(elm)}]`];
 		return segs(element).join("/");
-	}
+	}	
 
 	getCommentForRange = (limitingElement: any, selection: any) =>{
 		let selectionRange = selection.getRangeAt(0);
@@ -99,6 +99,9 @@ export class Selection extends Component<PropsType, StateType> {
 			action: "Clicked",
 			label: "Comment on text selection",
 		});
+
+		var elem = this.getElementByXPath("id('root')/div[3]/div[1]/div[1]/main[1]/div[2]/div[3]/div[1]/div[1]/div[2]/p[1]");
+
 	}
 
 	// trim strips whitespace from either end of a string.
@@ -118,8 +121,8 @@ export class Selection extends Component<PropsType, StateType> {
 			this.setState({
 				toolTipVisible: false,
 				comment: {},
-				position: {}
-			})
+				position: {},
+			});
 		}
 	}
 
@@ -159,3 +162,30 @@ export const MyToolTip = (props = ToolTipPropsType) => {
 };
 
 export default Selection;
+
+
+
+function getElementByXPath(path) { 
+	return (new XPathEvaluator()) 
+		.evaluate(path, document.documentElement, null, 
+			XPathResult.FIRST_ORDERED_NODE_TYPE, null) 
+		.singleNodeValue; 
+} 	
+
+export function highlightComment(comment: CommentType){
+	console.log(`comment: ${comment}`);
+	const startElement = getElementByXPath(comment.rangeStart);
+	let range = document.createRange();
+	range.setStart(startElement.firstChild, comment.rangeStartOffset);
+	const endElement = getElementByXPath(comment.rangeEnd);
+	range.setEnd(endElement.firstChild, comment.rangeEndOffset);
+	let selection = window.getSelection();
+	selection.addRange(range);
+	console.log(`range: ${range}`);
+
+	document.designMode = "on";
+	//document.execCommand("bold");
+	document.execCommand("BackColor", false, "yellow");
+	document.designMode = "off";
+	selection.removeAllRanges();
+}

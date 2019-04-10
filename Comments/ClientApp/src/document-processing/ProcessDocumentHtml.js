@@ -2,8 +2,9 @@
 
 import React, {PureComponent, Fragment} from "react";
 import ReactHtmlParser from "react-html-parser";
-import {nodeIsChapter, nodeIsInternalLink, nodeIsSection, nodeIsSubsection} from "./transforms/types";
+import {nodeIsChapter, nodeIsInternalLink, nodeIsSection, nodeIsSubsection, nodeHasASelectionComment} from "./transforms/types";
 import {processChapterSectionSubsection} from "./transforms/chapter-section-subsection";
+import {processSelectionComment} from "./transforms/selection-comment";
 import processInternalLink from "./transforms/internal-link";
 
 type PropsType = {
@@ -29,7 +30,7 @@ export class ProcessDocumentHtml extends PureComponent<PropsType, StateType> {
 		}
 	}
 
-	transformHtml = (node) => {
+	transformHtml = (node) => {		
 		if (nodeIsChapter(node) || nodeIsSection(node) || nodeIsSubsection(node)) {
 			return processChapterSectionSubsection(node, this.props.onNewCommentClick, this.props.url, this.props.allowComments);
 		}
