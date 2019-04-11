@@ -103,6 +103,8 @@ export class CommentList extends Component<PropsType, StateType> {
 				drawerMobile: false,
 				unsavedIds: [],
 			};
+
+			this.temporary();
 		}
 	}
 
@@ -118,9 +120,17 @@ export class CommentList extends Component<PropsType, StateType> {
 					shouldShowDrawer: response.data.consultationState.shouldShowDrawer,
 					shouldShowCommentsTab: response.data.consultationState.shouldShowCommentsTab,
 					shouldShowQuestionsTab: response.data.consultationState.shouldShowQuestionsTab,
-				}, this.highlightSelections);
+				}, this.temporary);
 			})
 			.catch(err => console.log("load comments in commentlist " + err));
+	}
+
+	temporary = () => {
+		var self = this;
+		setTimeout(function() {
+			self.highlightSelections();
+			self.forceUpdate();
+		}, 50);
 	}
 
 	highlightSelections = () => {
@@ -190,6 +200,7 @@ export class CommentList extends Component<PropsType, StateType> {
 		setTimeout(() => {
 			pullFocusByQuerySelector(`#Comment${idToUseForNewBox}`);
 		}, 0);
+		this.temporary();
 	};
 
 	//these handlers have moved to the helpers/editing-and-deleting.js utility file as they're also used in ReviewList.js

@@ -99,9 +99,6 @@ export class Selection extends Component<PropsType, StateType> {
 			action: "Clicked",
 			label: "Comment on text selection",
 		});
-
-		var elem = this.getElementByXPath("id('root')/div[3]/div[1]/div[1]/main[1]/div[2]/div[3]/div[1]/div[1]/div[2]/p[1]");
-
 	}
 
 	// trim strips whitespace from either end of a string.
@@ -176,16 +173,31 @@ export function highlightComment(comment: CommentType){
 	console.log(`comment: ${comment}`);
 	const startElement = getElementByXPath(comment.rangeStart);
 	let range = document.createRange();
-	range.setStart(startElement.firstChild, comment.rangeStartOffset);
+	try{ //hack, hack, hack. todo: fix this.
+		range.setStart(startElement.firstChild, comment.rangeStartOffset);
+	}
+	catch(err){
+		try{
+			range.setStart(startElement, comment.rangeStartOffset);
+		}
+		catch(err2){
+			return;
+		}
+	}
 	const endElement = getElementByXPath(comment.rangeEnd);
-	range.setEnd(endElement.firstChild, comment.rangeEndOffset);
+	try{ //hack, hack, hack. todo: fix this.
+		range.setEnd(endElement.firstChild, comment.rangeEndOffset);
+	} catch(err){
+		try{
+			range.setEnd(endElement, comment.rangeEndOffset);
+		} catch (err2){
+			return;
+		}
+	}
 	let selection = window.getSelection();
 	selection.addRange(range);
-	console.log(`range: ${range}`);
-
 	document.designMode = "on";
-	//document.execCommand("bold");
 	document.execCommand("BackColor", false, "yellow");
 	document.designMode = "off";
-	selection.removeAllRanges();
+	selection.removeAllRanges();	
 }
