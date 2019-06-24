@@ -23,18 +23,21 @@ export class Header extends PureComponent<PropsType> {
 		const subtitle1 = this.props.subtitle1;
 		const subtitle2 = this.props.subtitle2;
 
-		let endDate, isOpen, notStartedYet;
+		let startDate, endDate, isOpen, notStartedYet;
 
 		if (this.props.consultationState) {
+			startDate = this.props.consultationState.startDate || "";
 			endDate = this.props.consultationState.endDate || "";
 			isOpen = this.props.consultationState.consultationIsOpen || "";
 			notStartedYet = this.props.consultationState.consultationHasNotStartedYet || "";
 		}
 
 		let startOrEnd = "ended";
+		let showStartDate = false;
 
 		if (notStartedYet) {
 			startOrEnd = "starts";
+			showStartDate = true;
 		}
 
 		return (
@@ -50,8 +53,8 @@ export class Header extends PureComponent<PropsType> {
 						<p>
 							{startOrEnd === "starts" && <span className="tag">Not yet open for comments</span>}
 							{startOrEnd === "ended" && <span className="tag">Closed for comments</span>}{" "}
-							This consultation {startOrEnd} on <Moment format="D MMMM YYYY" date={endDate}/> at{" "}
-							<Moment format="HH:mm" date={endDate}/>
+							This consultation {startOrEnd} on <Moment format="D MMMM YYYY" date={(showStartDate ? startDate : endDate)}/> at{" "}
+							<Moment format="HH:mm" date={(showStartDate ? startDate : endDate)}/>
 						</p>
 					}
 				</div>
