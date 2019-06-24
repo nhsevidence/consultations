@@ -1,3 +1,226 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`[ClientApp]  Question administration Component should match the supplied snapshot 1`] = `null`;
+exports[`[ClientApp]  Question administration Component should match the supplied snapshot 1`] = `
+Array [
+  "",
+  "",
+  <div
+    className="container"
+>
+    <div
+        className="grid"
+    >
+        <div
+            data-g="12"
+        >
+            <h1
+                className="h3"
+            >
+                Our test consultation title
+            </h1>
+            <div
+                className="grid"
+            >
+                <div
+                    data-g="12 md:6"
+                >
+                    <nav
+                        aria-label="Add questions to consultation"
+                        className="stacked-nav"
+                    >
+                        <h2
+                            className="stacked-nav__root"
+                        >
+                            Add questions to consultation
+                        </h2>
+                        <ul
+                            className="stacked-nav__list"
+                        >
+                            <li
+                                className="stacked-nav__list-item"
+                                data-qa-sel="nav-list-item"
+                            >
+                                <a
+                                    aria-current={null}
+                                    href="/admin/questions/1/consultation"
+                                    onClick={[Function]}
+                                >
+                                    <span
+                                        className="pl--0"
+                                        data-g="10"
+                                    >
+                                        Our test consultation title
+                                    </span>
+                                    <span
+                                        className="text-right"
+                                        data-g="2"
+                                    >
+                                        (
+                                        1
+                                        )
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <nav
+                        aria-label="Add questions to documents"
+                        className="stacked-nav"
+                    >
+                        <h2
+                            className="stacked-nav__root"
+                        >
+                            Add questions to documents
+                        </h2>
+                        <ul
+                            className="stacked-nav__list"
+                        >
+                            <li
+                                className="stacked-nav__list-item"
+                                data-qa-sel="nav-list-item"
+                            >
+                                <a
+                                    aria-current={null}
+                                    href="/admin/questions/1/1"
+                                    onClick={[Function]}
+                                >
+                                    <span
+                                        className="pl--0"
+                                        data-g="10"
+                                    >
+                                        Unstable angina and NSTEMI
+                                    </span>
+                                    <span
+                                        className="text-right"
+                                        data-g="2"
+                                    >
+                                        (
+                                        1
+                                        )
+                                    </span>
+                                </a>
+                            </li>
+                            <li
+                                className="stacked-nav__list-item"
+                                data-qa-sel="nav-list-item"
+                            >
+                                <a
+                                    aria-current={null}
+                                    href="/admin/questions/1/2"
+                                    onClick={[Function]}
+                                >
+                                    <span
+                                        className="pl--0"
+                                        data-g="10"
+                                    >
+                                        Glaucoma: diagnosis and management – Full Guideline
+                                    </span>
+                                    <span
+                                        className="text-right"
+                                        data-g="2"
+                                    >
+                                        (
+                                        2
+                                        )
+                                    </span>
+                                </a>
+                            </li>
+                            <li
+                                className="stacked-nav__list-item"
+                                data-qa-sel="nav-list-item"
+                            >
+                                <a
+                                    aria-current={null}
+                                    href="/admin/questions/1/3"
+                                    onClick={[Function]}
+                                >
+                                    <span
+                                        className="pl--0"
+                                        data-g="10"
+                                    >
+                                        Emergency and acute medical care in over 16s: service delivery and organisation
+                                    </span>
+                                    <span
+                                        className="text-right"
+                                        data-g="2"
+                                    >
+                                        (
+                                        1
+                                        )
+                                    </span>
+                                </a>
+                            </li>
+                            <li
+                                className="stacked-nav__list-item"
+                                data-qa-sel="nav-list-item"
+                            >
+                                <a
+                                    aria-current={null}
+                                    href="/admin/questions/1/4"
+                                    onClick={[Function]}
+                                >
+                                    <span
+                                        className="pl--0"
+                                        data-g="10"
+                                    >
+                                        Nivolumab for adjuvant treatment of completely resected melanoma with lymph node involvement or metastatic disease
+                                    </span>
+                                    <span
+                                        className="text-right"
+                                        data-g="2"
+                                    >
+                                        (
+                                        3
+                                        )
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <nav
+                        aria-label="Add questions to submission form"
+                        className="stacked-nav"
+                    >
+                        <h2
+                            className="stacked-nav__root"
+                        >
+                            Add questions to submission form
+                        </h2>
+                        <ul
+                            className="stacked-nav__list"
+                        >
+                            <li
+                                className="stacked-nav__list-item"
+                                data-qa-sel="nav-list-item"
+                            >
+                                <a
+                                    aria-current={null}
+                                    href="/admin/questions/1/submission"
+                                    onClick={[Function]}
+                                >
+                                    <span
+                                        className="pl--0"
+                                        data-g="10"
+                                    >
+                                        todo: make the above the link
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div
+                    data-g="12 md:6"
+                >
+                    <div>
+                        <p>
+                            Choose consultation title or document to add questions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>,
+]
+`;

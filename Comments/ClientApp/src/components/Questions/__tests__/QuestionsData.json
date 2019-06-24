@@ -28,9 +28,11 @@
       "documentId": null,
       "show": true,
       "order": "022.000.000.000",
-      "section": null
+      "section": null,
+      "isSubmissionQuestion": false
     }
   ],
+  "submissionQuestions": [],
   "consultationQuestionsCount": 1,
   "documents": [
     {
@@ -64,7 +66,8 @@
           "documentId": 1,
           "show": true,
           "order": "022:001:000",
-          "section": null
+          "section": null,
+          "isSubmissionQuestion": false
         }
       ],
       "documentQuestionCount": 1
@@ -100,7 +103,8 @@
           "documentId": 2,
           "show": true,
           "order": "022.002.000.000",
-          "section": null
+          "section": null,
+          "isSubmissionQuestion": false
         },
         {
           "questionId": 2239,
@@ -128,7 +132,8 @@
           "documentId": 2,
           "show": true,
           "order": "022:002:001",
-          "section": null
+          "section": null,
+          "isSubmissionQuestion": false
         }
       ],
       "documentQuestionCount": 2
@@ -171,7 +176,8 @@
           "documentId": 3,
           "show": true,
           "order": "022:003:000",
-          "section": null
+          "section": null,
+          "isSubmissionQuestion": false
         }
       ],
       "documentQuestionCount": 1
@@ -214,7 +220,8 @@
           "documentId": 4,
           "show": true,
           "order": "022:004:000",
-          "section": null
+          "section": null,
+          "isSubmissionQuestion": false
         },
         {
           "questionId": 2255,
@@ -242,7 +249,8 @@
           "documentId": 4,
           "show": true,
           "order": "022:004:001",
-          "section": null
+          "section": null,
+          "isSubmissionQuestion": false
         },
         {
           "questionId": 2250,
@@ -270,7 +278,8 @@
           "documentId": 4,
           "show": true,
           "order": "022:004:002",
-          "section": null
+          "section": null,
+          "isSubmissionQuestion": false
         }
       ],
       "documentQuestionCount": 3
