@@ -9,10 +9,11 @@ namespace Comments.Common
     {
         public const string Scheme = "consultations:";
         public const string ConsultationUriFormat = Scheme + "//./consultation/{0}";
-        public const string DocumentUriFormat = ConsultationUriFormat + "/document/{1}";
+		public const string DocumentUriFormat = ConsultationUriFormat + "/document/{1}";
         public const string ChapterUriFormat = DocumentUriFormat + "/chapter/{2}";
+        public const string SubmissionUriFormat = ConsultationUriFormat + "/submission";
 
-	    public const string ConsultationsUriRegEx =
+		public const string ConsultationsUriRegEx =
 			@"^consultations:\/\/.+\/consultation\/(?<consultationId>\d+)(\/document\/)?(?<documentId>\d*)(\/chapter\/)?(?<chapterSlug>.*)$";
 //                "^consultations:\\/\\/.+\\/consultation\\/(?<consultationId>\\d+)(\\/document\\/)?(?<documentId>\\d?)(\\/chapter\\/)?(?<chapterSlug>.*)$"
             
@@ -107,6 +108,11 @@ namespace Comments.Common
 	    public static string CreateDocumentURI(int consultationId, int documentId)
 	    {
 		    return string.Format(DocumentUriFormat, consultationId, documentId);
+	    }
+
+	    public static string CreateSubmissionQuestionURI(int consultationId)
+	    {
+		    return string.Format(SubmissionUriFormat, consultationId);
 	    }
 	}
 }

@@ -144,6 +144,8 @@ export class Questions extends Component<PropsType, StateType> {
 		if (currentDocumentId === null) return;
 		const isCurrentDocument = item => item.documentId.toString() === currentDocumentId;
 		if (currentDocumentId === "consultation") return questionsData.consultationQuestions;
+		else if (currentDocumentId === "submission") return questionsData.submissionQuestions;
+
 		return questionsData.documents.filter(isCurrentDocument)[0].documentQuestions;
 	};
 
@@ -163,26 +165,36 @@ export class Questions extends Component<PropsType, StateType> {
 		moveQuestionHandler(event, question, direction, this);
 	};
 
-	newQuestion = (e: SyntheticEvent<HTMLElement>, consultationId: string, documentId: number | null, questionTypeId: number) => {
+	newQuestion = (e: SyntheticEvent<HTMLElement>, consultationId: string, documentId: number | null, questionTypeId: number, isSubmissionQuestion: boolean) => {
 		const newQuestion = {
 			questionId: -1,
 			questionTypeId,
 			documentId,
 			questionText: "",
 			sourceURI: "",
+			isSubmissionQuestion: false,
 		};
 
 		const questionsData = this.state.questionsData;
 		let currentQuestions;
 
 		if (documentId === null) {
-			//	this is a consultation level question
-			currentQuestions = questionsData.consultationQuestions;
-			newQuestion.sourceURI = `consultations://./consultation/${consultationId}`;
+			if (isSubmissionQuestion){
+				//	this is a submission question
+				currentQuestions = questionsData.submissionQuestions;
+				newQuestion.sourceURI = `consultations://./consultation/${consultationId}/submission`;
+				newQuestion.isSubmissionQuestion = true;
+			}else{
+				//	this is a consultation level question
+				currentQuestions = questionsData.consultationQuestions;
+				newQuestion.sourceURI = `consultations://./consultation/${consultationId}`;
+				newQuestion.isSubmissionQuestion = false;
+			}			
 		} else {
 			// this is a document level question
 			currentQuestions = questionsData.documents.filter(item => item.documentId === documentId)[0].documentQuestions;
 			newQuestion.sourceURI = `consultations://./consultation/${consultationId}/document/${documentId}`;
+			newQuestion.isSubmissionQuestion = false;
 		}
 
 		this.saveQuestion(e, newQuestion);
@@ -203,6 +215,24 @@ export class Questions extends Component<PropsType, StateType> {
 					url: this.getUrlForNavigation(this.props.draftProject, currentConsultationId, "consultation", this.props.match.params.reference),
 					marker: consultationQuestions.length || null,
 					current: isCurrentRoute("consultation"),
+					isReactRoute: true,
+				},
+			],
+		};
+	};
+
+	createSubmissionQuestionsNavigation = (questionsData: Object, currentConsultationId: string, currentDocumentId: string | null) => {
+		const isCurrentRoute = (documentId) => documentId.toString() === currentDocumentId;
+		const {consultationTitle, submissionQuestions} = questionsData;
+		return {
+			title: "Add questions to submission form",
+			links: [
+				{
+					label: "todo: make the above the link",
+					//url: `/admin/questions/${currentConsultationId}/consultation`,
+					url: this.getUrlForNavigation(this.props.draftProject, currentConsultationId, "submission", this.props.match.params.reference),
+					marker: submissionQuestions.length || null,
+					current: isCurrentRoute("submission"),
 					isReactRoute: true,
 				},
 			],
@@ -250,7 +280,7 @@ export class Questions extends Component<PropsType, StateType> {
 			this.props.match.params.documentId === undefined ? null : this.props.match.params.documentId;
 		const currentConsultationId = this.props.match.params.consultationId;
 		let questionsToDisplay, textQuestionTypeId;
-		if (questionsData.consultationQuestions) {
+		if (questionsData.consultationQuestions || questionsData.submissionQuestions) { //TODO: not sure about this line.
 			questionsToDisplay = this.getQuestionsToDisplay(currentDocumentId, questionsData);
 		}
 		if (questionsData.questionTypes) {
@@ -295,6 +325,12 @@ export class Questions extends Component<PropsType, StateType> {
 														questionsData,
 														currentConsultationId,
 														currentDocumentId)}/>
+											<StackedNav
+												links={
+													this.createSubmissionQuestionsNavigation(
+														questionsData,
+														currentConsultationId,
+														currentDocumentId)}/>
 										</div>
 										<div data-g="12 md:6">
 											<div>
@@ -322,9 +358,12 @@ export class Questions extends Component<PropsType, StateType> {
 															disabled={this.state.loading}
 															onClick={(e) => {
 																if (currentDocumentId === "consultation") {
-																	this.newQuestion(e, currentConsultationId, null, textQuestionTypeId);
-																} else {
-																	this.newQuestion(e, currentConsultationId, parseInt(currentDocumentId, 10), textQuestionTypeId);
+																	this.newQuestion(e, currentConsultationId, null, textQuestionTypeId, false);
+																} else if (currentDocumentId === "submission"){
+																	this.newQuestion(e, currentConsultationId, null, textQuestionTypeId, true);
+																}
+																else {
+																	this.newQuestion(e, currentConsultationId, parseInt(currentDocumentId, 10), textQuestionTypeId, false);
 																}
 															}}
 														>Add text response question

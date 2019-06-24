@@ -110,7 +110,8 @@ declare type QuestionType = {
 	commentOn: string,
 	sourceURI: string,
 	quote: string,
-	documentId: number
+	documentId: number,
+	isSubmissionQuestion: boolean,
 };
 
 declare type CommentsAndQuestionsType = {

@@ -112,6 +112,7 @@ namespace Comments.Services
 		    /*var consultation = _consultationService.GetConsultation(consultationId, BreadcrumbType.None, useFilters:false);*/
 
 		    var consultationSourceURI = ConsultationsUri.CreateConsultationURI(consultationId);
+		    var submissionQuestionSourceURI = ConsultationsUri.CreateSubmissionQuestionURI(consultationId);
 
 			var locationsWithQuestions = _context.GetQuestionsForDocument(new List<string>{ consultationSourceURI }, partialMatchSourceURI: true).ToList();
 
@@ -147,13 +148,18 @@ namespace Comments.Services
 			    .SelectMany(l => l.Question, (location, question) => new ViewModels.Question(location, question))
 			    .ToList();
 
-		    var questionTypes = GetQuestionTypes();
+			var submissionQuestions = locationsWithQuestions
+				.Where(l => l.SourceURI.Equals(submissionQuestionSourceURI, StringComparison.OrdinalIgnoreCase))
+				.SelectMany(l => l.Question, (location, question) => new ViewModels.Question(location, question))
+				.ToList();
+
+			var questionTypes = GetQuestionTypes();
 
 		    var previewState = draft ? PreviewState.Preview : PreviewState.NonPreview;
 		    var documentId = draft ? Constants.DummyDocumentNumberForPreviewProject : (int?)null;
 			var consultationState = _consultationService.GetConsultationState(consultationId, documentId, reference, previewState);
 
-			return new QuestionAdmin(documentsAndConsultationTitle.consultationTitle, consultationQuestions, questionAdminDocuments, questionTypes, consultationState);
+			return new QuestionAdmin(documentsAndConsultationTitle.consultationTitle, consultationQuestions, questionAdminDocuments, questionTypes, consultationState, submissionQuestions);
 	    }
 
 	    public IEnumerable<QuestionType> GetQuestionTypes()

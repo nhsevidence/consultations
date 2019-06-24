@@ -239,10 +239,14 @@ export function saveQuestionHandler(event: Event, question: QuestionType, self: 
 				// if we've updated a document's question, go to that document's documentQuestions
 				if (documentId) {
 					relevantQuestions = questionsData.documents.filter(item => item.documentId === documentId)[0].documentQuestions;
-				} else { // otherwise presume that we're updating a consultation's question
-					relevantQuestions = questionsData.consultationQuestions;
+				} else { 
+					if (question.isSubmissionQuestion){
+						relevantQuestions = questionsData.submissionQuestions;
+					} else{
+						// otherwise presume that we're updating a consultation's question
+						relevantQuestions = questionsData.consultationQuestions;
+					}
 				}
-
 				const index = relevantQuestions.map(item => item.questionId).indexOf(originalQuestionId);
 				relevantQuestions[index] = updatedQuestion;
 
@@ -295,7 +299,7 @@ export function moveQuestionHandler(event: Event, question: QuestionType, direct
 	});
 
 	const questions = question.documentId === null ?
-		self.state.questionsData.consultationQuestions :
+		(question.isSubmissionQuestion ? self.state.questionsData.submissionQuestions : self.state.questionsData.consultationQuestions) :
 		self.state.questionsData.documents.find(document => document.documentId === question.documentId).documentQuestions;
 	const questionIndex = questions.findIndex(q => q.questionId === question.questionId);
 	let updateableQuestionIndex = null;
@@ -378,8 +382,14 @@ function removeQuestionFromState(question: QuestionType, self: any) {
 	self.updateUnsavedIds(`${question.questionId}q`, false);
 	const questions = self.state.questionsData;
 	let currentQuestions;
-	if (question.documentId === null) { // we know it's a consultation level question
-		currentQuestions = questions.consultationQuestions;
+	if (question.documentId === null) { 
+		if (question.isSubmissionQuestion){
+			// we know it's a submission  question
+			currentQuestions = questions.submissionQuestions;
+		} else{
+			// we know it's a consultation level question
+			currentQuestions = questions.consultationQuestions;
+		}		
 	} else {
 		currentQuestions = questions.documents.filter(item => {
 			return item.documentId === question.documentId;

@@ -29,6 +29,7 @@ namespace Comments.ViewModels
 
         public ViewModels.QuestionType QuestionType { get; set; }
         public IList<ViewModels.Answer> Answers { get; set; }
+        public bool IsSubmissionQuestion => this.SourceURI.EndsWith("/submission"); 
     }
 
     public class QuestionType
