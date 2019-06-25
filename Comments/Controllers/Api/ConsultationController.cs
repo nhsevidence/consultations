@@ -25,7 +25,7 @@ namespace Comments.Controllers.Api
 		/// GET: eg. consultations/api/Consultation?consultationId=1
 		/// </summary>
 		/// <param name="consultationId"></param>
-		/// <param name="isReview">boolean indicating if the feed isbeing accessed for reviewing purposes</param>
+		/// <param name="isReview">boolean indicating if the feed is being accessed for reviewing purposes</param>
 		/// <returns></returns>
 		[HttpGet]
         public ViewModels.Consultation Get(int consultationId, bool isReview = false)

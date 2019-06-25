@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from "react";
 import { pullFocusByQuerySelector } from "../../helpers/accessibility-helpers";
 import { SubmitResponseFeedback } from "../SubmitResponseFeedback/SubmitResponseFeedback";
+import { SubmissionQuestion } from "../SubmissionQuestion/SubmissionQuestion";
 
 export class SubmitResponseDialog extends PureComponent {
 
@@ -165,6 +166,23 @@ export class SubmitResponseDialog extends PureComponent {
 						value={tobaccoDisclosure}
 						className="form__input form__input--textarea"
 						onChange={fieldsChangeHandler}/>
+				</div>
+				}
+
+				{this.props.submissionQuestions.length > 0 &&
+				<div>
+					<ul className="CommentList list--unstyled">
+						{this.props.submissionQuestions.map((question) => {
+							//const isUnsaved = this.state.unsavedIds.includes(`${question.questionId}q`);
+							return (
+								<SubmissionQuestion
+									key={question.questionId}
+									unique={`Question${question.questionId}`}
+									question={question}
+								/>
+							);
+						})}
+					</ul>
 				</div>
 				}
 

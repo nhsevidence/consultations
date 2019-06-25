@@ -437,7 +437,8 @@ export class Review extends Component<PropsType, StateType> {
 		if (this.state.justSubmitted) return <Redirect push to={"submitted"}/>;
 		const {reference} = this.state.consultationData;
 		const commentsToShow = this.state.comments.filter(comment => comment.show) || [];
-		const questionsToShow = this.state.questions.filter(question => question.show) || [];
+		const questionsToShow = this.state.questions.filter(question => question.show && !question.isSubmissionQuestion) || [];
+		const submissionQuestions = this.state.questions.filter(question => question.isSubmissionQuestion) || [];
 
 		return (
 			<Fragment>
@@ -564,6 +565,7 @@ export class Review extends Component<PropsType, StateType> {
 																organisationName={this.state.organisationName}
 																hasTobaccoLinks={this.state.hasTobaccoLinks}
 																tobaccoDisclosure={this.state.tobaccoDisclosure}
+																submissionQuestions={submissionQuestions}
 															/>
 														</div>
 													</div>
