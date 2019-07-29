@@ -250,6 +250,8 @@ export class Questions extends Component<PropsType, StateType> {
 			this.props.match.params.documentId === undefined ? null : this.props.match.params.documentId;
 		const currentConsultationId = this.props.match.params.consultationId;
 		let questionsToDisplay, textQuestionTypeId;
+		let displayDocumentQuestions = questionsData.documents.find(doc => doc.documentQuestionCount > 0) === undefined ? false : true;
+
 		if (questionsData.consultationQuestions) {
 			questionsToDisplay = this.getQuestionsToDisplay(currentDocumentId, questionsData);
 		}
@@ -289,12 +291,14 @@ export class Questions extends Component<PropsType, StateType> {
 														questionsData,
 														currentConsultationId,
 														currentDocumentId)}/>
-											<StackedNav
+											{ displayDocumentQuestions &&
+												<StackedNav
 												links={
 													this.createDocumentsNavigation(
 														questionsData,
 														currentConsultationId,
 														currentDocumentId)}/>
+											}
 										</div>
 										<div data-g="12 md:6">
 											<div>
