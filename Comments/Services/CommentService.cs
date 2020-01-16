@@ -40,7 +40,7 @@ namespace Comments.Services
 
 	    public (ViewModels.Comment comment, Validate validate) GetComment(int commentId)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (comment: null, validate: new Validate(valid: false, unauthorised: true, message: $"Not logged in accessing comment id:{commentId}"));
 
             var commentInDatabase = _context.GetComment(commentId);
@@ -56,7 +56,7 @@ namespace Comments.Services
 
         public (int rowsUpdated, Validate validate) EditComment(int commentId, ViewModels.Comment comment)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (rowsUpdated: 0, validate: new Validate(valid: false, unauthorised: true, message: $"Not logged in editing comment id:{commentId}"));
 
             var commentInDatabase = _context.GetComment(commentId);
@@ -75,7 +75,7 @@ namespace Comments.Services
 
         public (ViewModels.Comment comment, Validate validate) CreateComment(ViewModels.Comment comment)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (comment: null, validate: new Validate(valid: false, unauthorised: true, message: "Not logged in creating comment"));
 
 
@@ -97,7 +97,7 @@ namespace Comments.Services
 
         public (int rowsUpdated, Validate validate) DeleteComment(int commentId)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (rowsUpdated: 0, validate: new Validate(valid: false, unauthorised: true, message: $"Not logged in deleting comment id:{commentId}"));
 
             var commentInDatabase = _context.GetComment(commentId);
@@ -130,13 +130,13 @@ namespace Comments.Services
 			    sourceURIs.Add(ConsultationsUri.ConvertToConsultationsUri(relativeURL, CommentOn.Chapter));
 		    }
 
-			if (!user.IsAuthorised)
+			if (!user.IsAuthenticated)
 		    {
 			    consultationState = _consultationService.GetConsultationState(consultationSourceURI, PreviewState.NonPreview);
 			    var locationsQuestionsOnly = _context.GetQuestionsForDocument(sourceURIs, isReview);
 			    var questions = ModelConverters.ConvertLocationsToCommentsAndQuestionsViewModels(locationsQuestionsOnly).questions.ToList();
 				return new CommentsAndQuestions(new List<ViewModels.Comment>(), questions,
-				    user.IsAuthorised, signInURL, consultationState);
+				    user.IsAuthenticated, signInURL, consultationState);
 		    }
 
 			var locations = _context.GetAllCommentsAndQuestionsForDocument(sourceURIs, isReview).ToList();
@@ -145,7 +145,7 @@ namespace Comments.Services
 			var data = ModelConverters.ConvertLocationsToCommentsAndQuestionsViewModels(locations);
 		    var resortedComments = data.comments.OrderByDescending(c => c.LastModifiedDate).ToList(); //comments should be sorted in date by default, questions by document order.
 			
-			return new CommentsAndQuestions(resortedComments, data.questions.ToList(), user.IsAuthorised, signInURL, consultationState);
+			return new CommentsAndQuestions(resortedComments, data.questions.ToList(), user.IsAuthenticated, signInURL, consultationState);
 	    }
 
 		public ReviewPageViewModel GetCommentsAndQuestionsForReview(string relativeURL, IUrlHelper urlHelper, ReviewPageViewModel model)

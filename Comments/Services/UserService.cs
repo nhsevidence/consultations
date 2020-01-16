@@ -83,21 +83,21 @@ namespace Comments.Services
 		    }
 
 		    var user = GetCurrentUser();
-		    if (!user.IsAuthorised)
+		    if (!user.IsAuthenticated)
 		    {
-			    return new Validate(false, true, false, "User is not authorised");
+			    return new Validate(false, true, true, false, "User is not authorised");
 		    }
 		    var niceUser = _httpContextAccessor.HttpContext.User;
 		    if (!niceUser.Identity.IsAuthenticated)
 		    {
-			    return new Validate(false, false, false, "Not authenticated");
+			    return new Validate(false, false, false, false, "Not authenticated");
 		    }
 		    var host = _httpContextAccessor.HttpContext?.Request.Host.Host;
 			var userRoles = niceUser.Roles(host);
 
 		    if (!userRoles.Any(permittedRoles.Contains))
 		    {
-			    return new Validate(false, true, false, "NICE user is not permitted to download this file");
+			    return new Validate(false, false, true, false, "NICE user is not permitted to download this file");
 		    }
 		    return new Validate(valid: true);
 	    }

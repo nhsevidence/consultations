@@ -199,7 +199,7 @@ namespace Comments.Services
 
 		    var currentUser = _userService.GetCurrentUser();
 
-		    if (currentUser.IsAuthorised && !string.IsNullOrEmpty(currentUser.UserId))
+		    if (currentUser.IsAuthenticated && !string.IsNullOrEmpty(currentUser.UserId))
 		    {
 			    locations = locations ?? _context.GetAllCommentsAndQuestionsForDocument(new[] { sourceURI }, partialMatchSourceURI: true);
 		    }

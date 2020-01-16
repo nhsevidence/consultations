@@ -27,7 +27,7 @@
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
     <PackageReference Include="NICE.Feeds" Version="1.0.136" />
-    <PackageReference Include="NICE.Identity.Authentication.Sdk" Version="1.0.363" />
+    <PackageReference Include="NICE.Identity.Authentication.Sdk" Version="1.0.401" />
     <PackageReference Include="NICE.Logging" Version="6.0.23" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
   </ItemGroup>

@@ -43,7 +43,7 @@ namespace Comments.Controllers.Web
 	    public ActionResult DeleteAllSubmissionsFromSelf()
 		{
 			var user = _userService.GetCurrentUser();
-			if (!user.IsAuthorised || string.IsNullOrEmpty(user.UserId))
+			if (!user.IsAuthenticated || string.IsNullOrEmpty(user.UserId))
 				throw new Exception("Cannot get logged on user id");
 
 			var rowCount = _adminService.DeleteAllSubmissionsFromUser(user.UserId);

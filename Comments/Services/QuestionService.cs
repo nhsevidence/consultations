@@ -58,7 +58,7 @@ namespace Comments.Services
 
         public (int rowsUpdated, Validate validate) EditQuestion(int questionId, ViewModels.Question question)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (rowsUpdated: 0, validate: new Validate(valid: false, unauthorised: true, message: $"Not logged in editing question id:{questionId}"));
 
             var questionInDatabase = _context.GetQuestion(questionId);
@@ -74,7 +74,7 @@ namespace Comments.Services
 
         public (int rowsUpdated, Validate validate) DeleteQuestion(int questionId)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (rowsUpdated: 0, validate: new Validate(valid: false, unauthorised: true, message: $"Not logged in deleting question id:{questionId}"));
 
             var questionInDatabase = _context.GetQuestion(questionId);
@@ -88,7 +88,7 @@ namespace Comments.Services
 
         public (ViewModels.Question question, Validate validate) CreateQuestion(ViewModels.Question question)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (question: null, validate: new Validate(valid: false, unauthorised: true, message: "Not logged in creating question"));
 
 	        var questionType = _context.GetQuestionTypes().SingleOrDefault(qt => qt.QuestionTypeId.Equals(question.QuestionTypeId));

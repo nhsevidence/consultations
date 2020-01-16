@@ -137,6 +137,7 @@ export class Download extends Component<PropsType, StateType> {
 				});
 			})
 			.catch(err => { //TODO: maybe this should log?
+				console.log("maybe this should log?");
 				this.setState({
 					error: {
 						hasError: true,

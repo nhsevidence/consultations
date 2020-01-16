@@ -25,8 +25,8 @@ namespace Comments.Services
         }
         public (ViewModels.Answer answer, Validate validate) GetAnswer(int answerId)
         {
-            if (!_currentUser.IsAuthorised)
-                return (answer: null, validate: new Validate(valid: false, unauthorised: true, message: $"Not logged in accessing answer id:{answerId}"));
+            if (!_currentUser.IsAuthenticated)
+                return (answer: null, validate: new Validate(valid: false, unauthenticated: true, unauthorised: true, message: $"Not logged in accessing answer id:{answerId}"));
 
             var answerInDatabase = _context.GetAnswer(answerId);
 
@@ -41,7 +41,7 @@ namespace Comments.Services
 
         public (int rowsUpdated, Validate validate) EditAnswer(int answerId, ViewModels.Answer answer)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (rowsUpdated: 0, validate: new Validate(valid: false, unauthorised: true, message: $"Not logged in editing answer id:{answerId}"));
 
             var answerInDatabase = _context.GetAnswer(answerId);
@@ -61,7 +61,7 @@ namespace Comments.Services
 
         public (int rowsUpdated, Validate validate) DeleteAnswer(int answerId)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (rowsUpdated: 0, validate: new Validate(valid: false, unauthorised: true, message: $"Not logged in deleting answer id:{answerId}"));
 
             var answerInDatabase = _context.GetAnswer(answerId);
@@ -80,7 +80,7 @@ namespace Comments.Services
 
         public (ViewModels.Answer answer, Validate validate) CreateAnswer(ViewModels.Answer answer)
         {
-            if (!_currentUser.IsAuthorised)
+            if (!_currentUser.IsAuthenticated)
                 return (answer: null, validate: new Validate(valid: false, unauthorised: true, message: "Not logged in creating answer"));
 
 	        var status = _context.GetStatus(StatusName.Draft);

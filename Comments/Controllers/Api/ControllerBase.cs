@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Comments.ViewModels;
 
@@ -13,8 +13,11 @@ namespace Comments.Controllers.Api
 
             logger.LogWarning(validate.Message);
 
-            if (validate.Unauthorised)
+            if (validate.Unauthenticated) // || validate.Unauthorised) //todo: remove
                 return Unauthorized();
+
+            if (validate.Unauthorised)
+	            return Forbid();
 
             if (validate.NotFound)
                 return NotFound();

@@ -92,9 +92,9 @@ export const serverRenderer = (params): Promise => {
 		//the static router will still be there but won't try to render anything.
 		let app = (
 			<StaticRouter basename={BaseUrlRelative} location={params.url} context={staticContext}>
-				<App basename={BaseUrlRelative}/> 
+				
 			</StaticRouter>);
-
+		//<App basename={BaseUrlRelative}/> 
 		let rootContent = "";
 		try {
 			// First render: this trigger any data preloaders to fire

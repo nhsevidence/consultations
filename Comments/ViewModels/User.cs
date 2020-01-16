@@ -7,15 +7,15 @@ namespace Comments.ViewModels
 {
     public class User
     {
-        public User(bool isAuthorised, string displayName, string userId, string organisationName = null)
+        public User(bool isAuthenticated, string displayName, string userId, string organisationName = null)
         {
-            IsAuthorised = isAuthorised;
+	        IsAuthenticated = isAuthenticated;
             DisplayName = displayName;
             UserId = userId;
 	        OrganisationName = organisationName;
         }
 
-        public bool IsAuthorised { get; private set; }
+        public bool IsAuthenticated { get; private set; }
         public string DisplayName { get; private set; }
         public string UserId { get; private set; }
 		public string OrganisationName { get; private set; }

@@ -32,7 +32,7 @@ namespace Comments.Services
 		public ExportService(ConsultationsContext consultationsContext, IUserService userService, IConsultationService consultationService, IHttpContextAccessor httpContextAccessor, IFeedService feedService)
 	    {
 		    var user = userService.GetCurrentUser();
-		    if (!user.IsAuthorised)
+		    if (!user.IsAuthenticated)
 		    {
 			    throw new AuthenticationException("GetCurrentUser returned null");
 		    }
