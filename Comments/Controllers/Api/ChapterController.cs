@@ -39,7 +39,7 @@ namespace Comments.Controllers.Api
 
 	[Produces("application/json")]
 	[Route("consultations/api/[controller]")]
-	[Authorize(Policy="IndevUser")]
+	//[Authorize(Policy="IndevUser")]
 	public class PreviewChapterController : Controller
 	{
 		private readonly IConsultationService _consultationService;

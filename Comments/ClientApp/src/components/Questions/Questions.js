@@ -13,6 +13,7 @@ import { YNQuestion } from "../QuestionTypes/YNQuestion/YNQuestion";
 import { saveQuestionHandler, deleteQuestionHandler, moveQuestionHandler } from "../../helpers/editing-and-deleting";
 import { updateUnsavedIds } from "../../helpers/unsaved-comments";
 import { PreviouslySetQuestions } from "../PreviouslySetQuestions/PreviouslySetQuestions";
+import { canUseDOM } from "../../helpers/utils";
 
 type PropsType = {
 	staticContext: ContextType;

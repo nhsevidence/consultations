@@ -14,6 +14,7 @@ import { UserContext } from "../../context/UserContext";
 import { DocumentPreviewErrorOverview } from "./DocumentPreviewErrorOverview";
 import { pullFocusByQuerySelector } from "../../helpers/accessibility-helpers";
 import { Header } from "../Header/Header";
+import { canUseDOM } from "../../helpers/utils";
 
 type PropsType = {
 	staticContext?: any,
@@ -39,7 +40,8 @@ type StateType = {
 	error: {
 		hasError: boolean,
 		message: string | null,
-	}
+	},
+	isAuthorised: Boolean,
 };
 
 export class DocumentPreview extends Component<PropsType, StateType> {
@@ -60,6 +62,7 @@ export class DocumentPreview extends Component<PropsType, StateType> {
 				hasError: false,
 				message: null,
 			},
+			isAuthorised: false
 		};
 
 		if (this.props) {
@@ -67,50 +70,66 @@ export class DocumentPreview extends Component<PropsType, StateType> {
 			if (this.props.staticContext && this.props.staticContext.preload) {
 				preloadedData = this.props.staticContext.preload.data; //this is data from Configure => SupplyData in Startup.cs. the main thing it contains for this call is the cookie for the current user.
 			}
+			const isAuthorised = ((preloadedData && preloadedData.isAuthorised) || (canUseDOM() && window.__PRELOADED__["isAuthorised"]));
+			console.log("is authorised set to:" + isAuthorised);
 
-			let preloadedChapter, preloadedDocuments, preloadedConsultation;
+			if (isAuthorised){
 
-			preloadedChapter = preload(
-				this.props.staticContext,
-				"previewchapter",
-				[],
-				{ ...this.props.match.params },
-				preloadedData,
-			);
-			preloadedDocuments = preload(
-				this.props.staticContext,
-				"previewdraftdocuments",
-				[],
-				{ ...this.props.match.params },
-				preloadedData,
-			);
+				let preloadedChapter, preloadedDocuments, preloadedConsultation;
+				console.log("about to preload chapter");
+				preloadedChapter = preload(
+					this.props.staticContext,
+					"previewchapter",
+					[],
+					{ ...this.props.match.params },
+					preloadedData,
+				);
+				console.log("preloaded chapter:")
+				console.log(preloadedChapter);
+				preloadedDocuments = preload(
+					this.props.staticContext,
+					"previewdraftdocuments",
+					[],
+					{ ...this.props.match.params },
+					preloadedData,
+				);
 
-			preloadedConsultation = preload(
-				this.props.staticContext,
-				"draftconsultation",
-				[],
-				{ ...this.props.match.params },
-				preloadedData,
-			);
+				preloadedConsultation = preload(
+					this.props.staticContext,
+					"draftconsultation",
+					[],
+					{ ...this.props.match.params },
+					preloadedData,
+				);
+				console.log("about to set constructor isauth");
+				console.log(`preloadedChapter: ${preloadedChapter}`);
+				console.log(`preloadedDocuments: ${preloadedDocuments}`);
+				console.log(`preloadedConsultation: ${preloadedConsultation}`);
+				console.log(preloadedChapter && preloadedDocuments && preloadedConsultation);
 
-			if (preloadedChapter && preloadedDocuments && preloadedConsultation) {
-				const allowComments = preloadedConsultation.supportsComments &&
-					preloadedConsultation.consultationState.consultationIsOpen &&
-					!preloadedConsultation.consultationState.userHasSubmitted;
-				this.state = {
-					chapterData: preloadedChapter,
-					documentsData: preloadedDocuments,
-					consultationData: preloadedConsultation,
-					loading: false,
-					hasInitialData: true,
-					currentInPageNavItem: null,
-					onboarded: false,
-					allowComments: allowComments,
-					error: {
-						hasError: false,
-						message: null,
-					},
-				};
+				if (preloadedChapter && preloadedDocuments && preloadedConsultation) {
+					console.log("inside the preload setter");
+					const allowComments = preloadedConsultation.supportsComments &&
+						preloadedConsultation.consultationState.consultationIsOpen &&
+						!preloadedConsultation.consultationState.userHasSubmitted;
+					this.state = {
+						chapterData: preloadedChapter,
+						documentsData: preloadedDocuments,
+						consultationData: preloadedConsultation,
+						loading: false,
+						hasInitialData: true,
+						currentInPageNavItem: null,
+						onboarded: false,
+						allowComments: allowComments,
+						error: {
+							hasError: false,
+							message: null,
+						},
+						isAuthorised: isAuthorised
+					};
+					console.log("set constructor isauth");
+					console.log(JSON.stringify(this.state));
+				}
 			}
 		}
 	}
@@ -119,7 +138,7 @@ export class DocumentPreview extends Component<PropsType, StateType> {
 		const { consultationId, documentId, chapterSlug, reference } = this.props.match.params;
 		let chapterData;
 		let documentsData;
-
+console.log("gathering data. doc preview");
 		chapterData = load("previewchapter", undefined, [], {
 			consultationId,
 			documentId,
@@ -177,7 +196,7 @@ export class DocumentPreview extends Component<PropsType, StateType> {
 	};
 
 	componentDidMount() {
-		if (!this.state.hasInitialData) {
+		if (!this.state.hasInitialData && this.state.isAuthorised) {
 			this.gatherData()
 				.then(data => {
 					const allowComments = data.consultationData.supportsComments &&
@@ -211,7 +230,7 @@ export class DocumentPreview extends Component<PropsType, StateType> {
 		this.setState({
 			loading: true,
 		});
-
+console.log("cdm doc preview");
 		this.gatherData()
 			.then(data => {
 				this.setState({
@@ -267,10 +286,13 @@ export class DocumentPreview extends Component<PropsType, StateType> {
 	};
 
 	render() {
+		console.log(" error is:" + JSON.stringify(this.state.error));
+		console.log("has error is:" + this.state.error.hasError);
 		if (this.state.error.hasError) { throw new Error(this.state.error.message); }
-		if (!this.state.hasInitialData) return <h1>Loading...</h1>;
-		const { title, reference } = this.state.consultationData;
-		const { content } = this.state.chapterData;
+		console.log("render isauthorised:" + this.state.isAuthorised);
+		if (!this.state.hasInitialData && this.state.isAuthorised) return <h1>Loading...</h1>;
+		const { title, reference } = this.state.consultationData;// || { title: "default title"};
+		const { content } = this.state.chapterData;// || {};
 		const documentId = parseInt(this.props.match.params.documentId, 0);
 		return (
 			<Fragment>

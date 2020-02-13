@@ -37,6 +37,7 @@ const preload = (staticContext, endpoint,  urlParameters = [], query = {}, prelo
 			return response.data;
 		})
 		.catch(err => {
+			console.log("preload error");
 			if (throwOnException){
 				// todo: no pages loading on dev / alpha poss to do with the footer erroring...?
 				 throw new Error(err);

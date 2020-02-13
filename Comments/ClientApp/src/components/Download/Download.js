@@ -100,7 +100,7 @@ export class Download extends Component<PropsType, StateType> {
 			);
 	
 			if (preloadedConsultations) {	
-
+				console.log("download page setting state in constructor");
 				this.state = {
 					searchTerm: "",
 					path: this.props.basename + this.props.location.pathname + this.props.location.search,
