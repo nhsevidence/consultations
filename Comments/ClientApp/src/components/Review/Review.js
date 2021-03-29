@@ -418,7 +418,7 @@ export class Review extends Component<PropsType, StateType> {
 	};
 
 	fieldsChangeHandler = (e: SyntheticInputEvent<*>) => {
-		if(e.target.type == "radio"){
+		if(e.target.type === "radio"){
 			let value = e.target.value;
 			if(e.target.value==="true") value = true;
 			if(e.target.value==="false") value = false;
@@ -555,7 +555,7 @@ export class Review extends Component<PropsType, StateType> {
 														consultationState={this.state.consultationData.consultationState}
 													/>
 
-													<SubmittedContent 
+													<SubmittedContent
 														organisationName={contextValue.organisationName}
 														isOrganisationCommenter={contextValue.isOrganisationCommenter}
 														isLead={contextValue.isLead}

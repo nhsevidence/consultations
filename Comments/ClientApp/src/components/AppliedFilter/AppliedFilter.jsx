@@ -17,9 +17,7 @@ export class AppliedFilter extends Component<PropsType> {
 	constructor(props: PropsType) {
 		super(props);
 
-		this.handleRemoveFilterLinkClick = this.handleRemoveFilterLinkClick.bind(
-			this
-		);
+		this.handleRemoveFilterLinkClick = this.handleRemoveFilterLinkClick.bind(this);
 	}
 
 	//handleRemoveFilterLinkClick: () => void;
@@ -35,7 +33,7 @@ export class AppliedFilter extends Component<PropsType> {
 		return removeQueryParameter(
 			this.props.path,
 			this.props.appliedFilter.groupId,
-			this.props.appliedFilter.optionId
+			this.props.appliedFilter.optionId,
 		);
 	}
 

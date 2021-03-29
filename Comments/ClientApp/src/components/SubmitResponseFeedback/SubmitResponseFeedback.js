@@ -13,7 +13,6 @@ export const SubmitResponseFeedback = (props) => {
 		emailIsEmpty,
 		emailIsWrongFormat,
 		questions,
-		emailAddress,
 		isOrganisationCommenter,
 	} = props;
 
