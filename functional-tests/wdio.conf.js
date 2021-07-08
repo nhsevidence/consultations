@@ -14,9 +14,13 @@ exports.config = {
 		// "./src/features/**/unsavedCommentDocPage.feature",
 		// "./src/features/**/submitComments.feature",
 		// "./src/features/**/orderingOnReviewPage.feature",
-		// "./src/features/**/commentOnSubSection.feature",
+		 "./src/features/**/commentOnSubSection.feature",
+		 "./src/features/**/filterAdminPageByGID.feature",
+		 "./src/features/**/filterNumberOfResultsOnAdminPage.feature",
+		 "./src/features/**/filterYourStatusOnAdminPage.feature",
 		// "./src/features/**/commentOnDocument.feature",
-		// "./src/features/**/commentOnChapter.feature",
+		 "./src/features/**/commentOnChapter.feature",
+		 "./src/features/**/filterAdminPageByTitle.feature",
 		// "./src/features/**/commentOnSection.feature"
 	],
 
@@ -34,7 +38,7 @@ exports.config = {
 	// Change this to verbose if you want more detailed logging in the terminal
 	coloredLogs: true,
 	screenshotPath: "./errorShots/",
-	baseUrl: "https://test.nice.org.uk/consultations/",
+	baseUrl: "https://alpha.nice.org.uk/consultations/",
 	reporters: ["spec"],
 
 	// Use BDD with Cucumber
