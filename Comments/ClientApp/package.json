@@ -38,7 +38,7 @@
     "@nice-digital/nds-button": "^1.0.22-alpha.0",
     "@nice-digital/nds-input": "^1.0.3-alpha.0",
     "aspnet-prerendering": "^3.0.1",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel-preset-react-app": "^9.1.2",
     "bless": "^3.0.3",
     "classlist-polyfill": "^1.2.0",
